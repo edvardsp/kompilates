@@ -1,30 +1,42 @@
+
 %{
-#include <vslc.h>
+#include <stdio.h>
+
+#include "vslc.h"
+#include "nodetypes.h"
 %}
 %option noyywrap
 %option array
 %option yylineno
 
-WHITESPACE [\ \t\v\r\n]
-COMMENT \/\/[^\n]+
-QUOTED \"([^\"\n]|\\\")*\"
+digit       [0-9]
+digits      {digit}+
+letter      [a-zA-Z]
+letters     {letter}+
+
 %%
-{WHITESPACE}+           { /* Eliminate whitespace */ }
-{COMMENT}               { /* Eliminate comments */ }
-FUNC                    { return FUNC; }
-PRINT                   { return PRINT; }
-RETURN                  { return RETURN; }
-CONTINUE                { return CONTINUE; }
-IF                      { return IF; }
-THEN                    { return THEN; }
-ELSE                    { return ELSE; }
-WHILE                   { return WHILE; }
-DO                      { return DO; }
-BEGIN                   { return OPENBLOCK; }
+FUNC                    { return FUNC;       }
+BEGIN                   { return OPENBLOCK;  }
 END                     { return CLOSEBLOCK; }
-VAR                     { return VAR; }
-[0-9]+                  { return NUMBER; }
-[A-Za-z_][0-9A-Za-z_]*  { return IDENTIFIER; }
-{QUOTED}                { return STRING; }
-.                       { return yytext[0]; }
+RETURN                  { return RETURN;     }
+PRINT                   { return PRINT;      }
+CONTINUE                { return CONTINUE;   }
+IF                      { return IF;         }
+THEN                    { return THEN;       }
+ELSE                    { return ELSE;       }
+WHILE                   { return WHILE;      }
+DO                      { return DO;         }
+VAR                     { return VAR;        }
+
+[\:\+\-\*\/\=\<\>\(\)\,]    { return yytext[0]; }
+
+_?{letter}({letter}|{digit}|_)*       { return IDENT;  }
+{digits}                              { return NUMBER; }
+\"(\\.|[^"])*\"                       { return STRING; }
+
+
+\/\/.*\n                { /* Skip comment */ }
+[ \t\n\r\v]             { /* Skip whitespace */ }
+.                       { printf("Unkown character [%c]\n", yytext[0]); }
+
 %%

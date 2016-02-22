@@ -1,5 +1,6 @@
 #ifndef NODETYPES_H
 #define NODETYPES_H
+
 typedef enum {
     PROGRAM,
     GLOBAL_LIST,
@@ -29,5 +30,6 @@ typedef enum {
     STRING_DATA
 } node_index_t;
 
-extern char *node_string[25];
+extern char *node_string[26];
+
 #endif
