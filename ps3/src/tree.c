@@ -43,36 +43,36 @@ pNode node_create()
 }
 
 
-void node_print(pNode root, int nesting)
+void node_print(pNode curr, int nesting)
 {
-    if (root != NULL)
+    if (curr != NULL)
     {
         /* Print the type of node indented by the nesting level */
-        printf("%*c%s", nesting, ' ', node_string[root->type]);
+        printf("%*c%s", nesting, ' ', node_string[curr->type]);
 
         /* For identifiers, strings, expressions and numbers,
          * print the data element also
          */
-        if (root->type == IDENTIFIER_DATA ||
-            root->type == STRING_DATA ||
-            root->type == RELATION ||
-            root->type == EXPRESSION) 
-            printf("(%s)", (char *)root->data);
-        else if (root->type == NUMBER_DATA)
-            printf("(%i)", *(int *)root->data);
+        if (curr->type == IDENTIFIER_DATA ||
+            curr->type == STRING_DATA ||
+            curr->type == RELATION ||
+            curr->type == EXPRESSION) 
+            printf("(%s)", (char *)curr->data);
+        else if (curr->type == NUMBER_DATA)
+            printf("(%i)", *(int *)curr->data);
 
         /* Make a new line, and traverse the node's children in the same manner */
         putchar('\n');
-        for (int i = 0; i < root->n_children; i++)
-            node_print(root->children[i], nesting + 1);
+        for (size_t i = 0; i < curr->n_children; i++)
+            node_print(curr->children[i], nesting + 1);
     }
     else
-        printf("%*c%p\n", nesting, ' ', root);
+        printf("%*c%p\n", nesting, ' ', curr);
 }
 
 
 /* Take the memory allocated to a node and fill it in with the given elements */
-void node_init(pNode nd, node_index_t type, void *data, int n_children, ...)
+void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
 {
     va_list argp;
     va_start(argp, n_children);
@@ -83,7 +83,7 @@ void node_init(pNode nd, node_index_t type, void *data, int n_children, ...)
     nd->n_children = n_children;
     if (n_children > 0)
         nd->children = (pNode *)calloc(n_children, sizeof(pNode));
-    for (int i = 0; i < n_children; i++)
+    for (size_t i = 0; i < n_children; i++)
     {
         nd->children[i] = va_arg(argp, pNode);
     }
@@ -114,7 +114,7 @@ static void __reduce_3(pNode node, node_index_t type, void *data)
     node_init(node, type, data, 3, ch3, ch2, ch1);
 }
 
-void node_reduce(node_index_t type, void *data, int n_pops)
+void node_reduce(node_index_t type, void *data, size_t n_pops)
 {
     pNode node = node_create();  
     switch (n_pops)
@@ -124,7 +124,7 @@ void node_reduce(node_index_t type, void *data, int n_pops)
         case 2: __reduce_2(node, type, data);   break;
         case 3: __reduce_3(node, type, data);   break;
         default:
-            fprintf(stderr, "node_reduce called with n=%i\n", n_pops);
+            fprintf(stderr, "node_reduce called with n=%zu\n", n_pops);
             exit(1);
     }
     stack_push(&stack, node); 
@@ -151,14 +151,14 @@ void node_destroy(pNode discard)
     
     if (discard->children)
     {
-        for (int i = 0; i < discard->n_children; i++)
+        for (size_t i = 0; i < discard->n_children; i++)
             node_destroy(discard->children[i]);
     }
     node_finalize(discard);
 }
 
 
-static bool __simplify_single_node(pNode *child, pNode parent, int n)
+static bool __simplify_single_node(pNode *child, pNode parent, size_t n)
 {
     if (SINGLE_TYPE(*child))
     {
@@ -183,7 +183,7 @@ static bool __simplify_lists(pNode current)
         return false;
 
     // Find child with same type
-    int n = 0;
+    size_t n = 0;
     pNode next = NULL;
     for ( ; n < current->n_children; n++)
     {
@@ -201,21 +201,21 @@ static bool __simplify_lists(pNode current)
 
     // Resize children buffer
     size_t new_size = current->n_children - 1 + next->n_children;
-    pNode *buf = (pNode *)realloc(current->children, new_size * sizeof(pNode));
-    if (!buf)
+    pNode *buf1 = (pNode *)realloc(current->children, new_size * sizeof(pNode));
+    if (!buf1)
     {
         printf("Realloc during simplfy lists failed\n");
         exit(1);    
     }
-    current->children = buf;
+    current->children = buf1;
 
     // Extend gap of next node for possible more children
     size_t extend = next->n_children - 1;
     if (extend > 0 && n < current->n_children - 1)
     {
         size_t nbytes = sizeof(pNode) * (current->n_children - n - 1);
-        pNode *buf = memmove(&current->children[n+1+extend], &current->children[n+1], nbytes);
-        if (!buf)
+        pNode *buf2 = memmove(&current->children[n+1+extend], &current->children[n+1], nbytes);
+        if (!buf2)
         {
             printf("Memmove during simplfy lists failed\n");
             exit(1);    
@@ -223,9 +223,9 @@ static bool __simplify_lists(pNode current)
     }
 
     // Append new childs
-    for (int i = 0; i < next->n_children; i++)
+    for (size_t i = 0; i < next->n_children; i++)
     {
-        int index = n + i;
+        size_t index = n + i;
         current->children[index] = next->children[i];
     }
     current->n_children = new_size;
@@ -244,7 +244,7 @@ static bool __simplify_expressions(pNode expr)
         return false;
 
     // Recursively work from down to up
-    for (int i = 0; i < expr->n_children; i++)
+    for (size_t i = 0; i < expr->n_children; i++)
     {
         pNode child = expr->children[i];
         if (child)
@@ -322,7 +322,7 @@ static bool __simplify_expressions(pNode expr)
 
 void node_simplify(pNode simplified)
 {
-    for (int n = 0; n < simplified->n_children; n++)
+    for (size_t n = 0; n < simplified->n_children; n++)
     {
         pNode child = simplified->children[n];
         if (!child)

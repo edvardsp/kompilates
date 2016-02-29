@@ -7,3 +7,6 @@ clean:
 	-rm -f *.tree
 purge: clean
 	-rm -f ${TARGETS}
+
+test:
+	$(foreach var, $(TARGETS), diff $(var) $(var).correct | colordiff; )
