@@ -1,4 +1,8 @@
 
+/*******************************************************************************
+*       Includes
+*******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -8,7 +12,12 @@
 
 #include "vslc.h"
 
+/*******************************************************************************
+*       Defines
+*******************************************************************************/
+
 #define TOINT(node) (*(int *)((node)->data))
+
 
 #define SINGLE_TYPE(node) \
     ((node)->type == GLOBAL         || \
@@ -16,6 +25,7 @@
      (node)->type == PRINT_ITEM     || \
      (node)->type == ARGUMENT_LIST  || \
      (node)->type == PARAMETER_LIST)
+
 
 #define LIST_TYPE(node) \
     ((node)->type == PRINT_LIST      || \
@@ -26,9 +36,19 @@
      (node)->type == PRINT_STATEMENT || \
      (node)->type == DECLARATION_LIST)
 
+
 #define EXPRDATA_TYPE(node) \
     ((node)->type == NUMBER_DATA || \
      (node)->type == IDENTIFIER_DATA)
+
+/*******************************************************************************
+*       Functions
+*******************************************************************************/
+
+/*******************************************************************************
+*   node_create
+*   |   Allocates memory for a node object 
+*******************************************************************************/
 
 pNode node_create()
 {
@@ -42,6 +62,10 @@ pNode node_create()
     return out;
 }
 
+/*******************************************************************************
+*   node_print
+*   |   Print out the node tree recurseively 
+*******************************************************************************/
 
 void node_print(pNode curr, int nesting)
 {
@@ -70,8 +94,12 @@ void node_print(pNode curr, int nesting)
         printf("%*c%p\n", nesting, ' ', curr);
 }
 
+/*******************************************************************************
+*   node_init
+*   |   Take the memory allocated to a node and fill it in 
+*   |   with the given elements 
+*******************************************************************************/
 
-/* Take the memory allocated to a node and fill it in with the given elements */
 void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
 {
     va_list argp;
@@ -91,12 +119,18 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
     va_end(argp);
 }
 
+/*******************************************************************************
+*   node_reduce
+*   |   Used by parser, used to pop the stack, create new node 
+*   |   with the popped as childs, push back created node.
+*******************************************************************************/
 
 static void __reduce_1(pNode node, node_index_t type, void *data)
 {
     pNode ch1 = stack_pop(&stack);
     node_init(node, type, data, 1, ch1);
 }
+
 
 static void __reduce_2(pNode node, node_index_t type, void *data)
 {
@@ -114,6 +148,7 @@ static void __reduce_3(pNode node, node_index_t type, void *data)
     node_init(node, type, data, 3, ch3, ch2, ch1);
 }
 
+
 void node_reduce(node_index_t type, void *data, size_t n_pops)
 {
     pNode node = node_create();  
@@ -130,8 +165,11 @@ void node_reduce(node_index_t type, void *data, size_t n_pops)
     stack_push(&stack, node); 
 }
 
+/*******************************************************************************
+*   node_finalize
+*   |   Remove a node and its contents 
+*******************************************************************************/
 
-/* Remove a node and its contents */
 void node_finalize(pNode discard)
 {
     assert(discard != NULL);
@@ -142,8 +180,11 @@ void node_finalize(pNode discard)
     free(discard);
 }
 
+/*******************************************************************************
+*   node_destroy
+*   |   Recursively remove the entire tree rooted at a node 
+*******************************************************************************/
 
-/* Recursively remove the entire tree rooted at a node */
 void node_destroy(pNode discard)
 {
     if (!discard)
@@ -157,6 +198,10 @@ void node_destroy(pNode discard)
     node_finalize(discard);
 }
 
+/*******************************************************************************
+*   node__simplify
+*   |   Recursively simplify the entire node tree of redundant nodes 
+*******************************************************************************/
 
 static bool __simplify_single_node(pNode *child, pNode parent, size_t n)
 {
@@ -322,16 +367,20 @@ static bool __simplify_expressions(pNode expr)
 
 void node_simplify(pNode simplified)
 {
+    // For each child
     for (size_t n = 0; n < simplified->n_children; n++)
     {
+        // If valid
         pNode child = simplified->children[n];
         if (!child)
             continue;
         
+        // Check each simplify-stage
         __simplify_single_node(&child, simplified, n);
         __simplify_expressions(child);
         __simplify_lists(child);
 
+        // Recursively check next stage
         node_simplify(child);
     }
 }
