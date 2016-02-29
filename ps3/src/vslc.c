@@ -19,7 +19,7 @@ int main(void)
     yyparse();
 
     // Simplify the node tree and print it
-    node_simplify(&root, root);
+    node_simplify(root);
     node_print(root, 0);
 
     // Clean up

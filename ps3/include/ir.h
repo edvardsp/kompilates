@@ -19,6 +19,6 @@ void node_print(pNode root, int nesting);
 void node_reduce(node_index_t type, void *data, int n_pops);
 void node_finalize(pNode discard);
 void node_destroy(pNode discard);
-void node_simplify(pNode *simplified, pNode parent);
+void node_simplify(pNode simplified);
 
 #endif

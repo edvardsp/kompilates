@@ -1,7 +1,6 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 #include "nodetypes.h"
@@ -96,7 +95,7 @@ relation : expression '=' expression { node_reduce(RELATION, strdup("="), 2); }
 
 expression : expression '+' expression        { node_reduce(EXPRESSION, strdup("+"), 2);  }
            | expression '-' expression        { node_reduce(EXPRESSION, strdup("-"), 2);  }
-           | expression '*' expression        { node_reduce(EXPRESSION, strdup("/"), 2);  }
+           | expression '*' expression        { node_reduce(EXPRESSION, strdup("*"), 2);  }
            | expression '/' expression        { node_reduce(EXPRESSION, strdup("/"), 2);  }
            | '-' expression %prec UMINUS      { node_reduce(EXPRESSION, strdup("-"), 1);  }
            | '(' expression ')'               { /* Skip nesting parenthesis */    }
@@ -115,7 +114,7 @@ print_item : expression { node_reduce(PRINT_ITEM, NULL, 1); }
 identifier : IDENT { node_reduce(IDENTIFIER_DATA, strdup(yytext), 0); } 
            ;
 number : NUMBER {
-           int64_t *buf = (int64_t *)malloc(sizeof(int64_t));
+           int *buf = (int *)malloc(sizeof(int));
            *buf = strtol(yytext, NULL, 10);
            node_reduce(NUMBER_DATA, buf, 0);
          } 
