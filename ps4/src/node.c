@@ -54,15 +54,15 @@
 
 /*******************************************************************************
 *   node_create
-*   |   Allocates memory for a node object 
+*   |   Allocates memory for a node object
 *******************************************************************************/
 
 pNode node_create()
 {
-    pNode out = (pNode)calloc(1, sizeof(Node));
+    pNode out = calloc(1, sizeof(Node));
     if (!out)
     {
-        
+
         fprintf(stderr, "calloc of create_node failed\n");
         exit(1);
     }
@@ -71,7 +71,7 @@ pNode node_create()
 
 /*******************************************************************************
 *   node_print
-*   |   Print out the node tree recurseively 
+*   |   Print out the node tree recurseively
 *******************************************************************************/
 
 void node_print(pNode curr, int nesting)
@@ -84,7 +84,7 @@ void node_print(pNode curr, int nesting)
         /* For identifiers, strings, expressions and numbers,
          * print the data element also
          */
-        if (STRDATA_TYPE(curr)) 
+        if (STRDATA_TYPE(curr))
             printf("(%s)", (char *)curr->data);
         else if (curr->type == NUMBER_DATA)
             printf("(%i)", *(int *)curr->data);
@@ -100,8 +100,8 @@ void node_print(pNode curr, int nesting)
 
 /*******************************************************************************
 *   node_init
-*   |   Take the memory allocated to a node and fill it in 
-*   |   with the given elements 
+*   |   Take the memory allocated to a node and fill it in
+*   |   with the given elements
 *******************************************************************************/
 
 void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
@@ -114,7 +114,7 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
     nd->entry = NULL;
     nd->n_children = n_children;
     if (n_children > 0)
-        nd->children = (pNode *)calloc(n_children, sizeof(pNode));
+        nd->children = calloc(n_children, sizeof(pNode));
     for (size_t i = 0; i < n_children; i++)
     {
         nd->children[i] = va_arg(argp, pNode);
@@ -125,7 +125,7 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
 
 /*******************************************************************************
 *   node_reduce
-*   |   Used by parser, used to pop the stack, create new node 
+*   |   Used by parser, used to pop the stack, create new node
 *   |   with the popped as childs, push back created node.
 *******************************************************************************/
 
@@ -155,7 +155,7 @@ static void __reduce_3(pNode node, node_index_t type, void *data)
 
 void node_reduce(node_index_t type, void *data, size_t n_pops)
 {
-    pNode node = node_create();  
+    pNode node = node_create();
     switch (n_pops)
     {
         case 0: node_init(node, type, data, 0); break;
@@ -166,12 +166,12 @@ void node_reduce(node_index_t type, void *data, size_t n_pops)
             fprintf(stderr, "node_reduce called with n=%zu\n", n_pops);
             exit(1);
     }
-    stack_push(&stack, node); 
+    stack_push(&stack, node);
 }
 
 /*******************************************************************************
 *   node_finalize
-*   |   Remove a node and its contents 
+*   |   Remove a node and its contents
 *******************************************************************************/
 
 void node_finalize(pNode discard)
@@ -186,14 +186,14 @@ void node_finalize(pNode discard)
 
 /*******************************************************************************
 *   node_destroy
-*   |   Recursively remove the entire tree rooted at a node 
+*   |   Recursively remove the entire tree rooted at a node
 *******************************************************************************/
 
 void node_destroy(pNode discard)
 {
     if (!discard)
         return;
-    
+
     if (discard->children)
     {
         for (size_t i = 0; i < discard->n_children; i++)
@@ -204,7 +204,7 @@ void node_destroy(pNode discard)
 
 /*******************************************************************************
 *   node__simplify
-*   |   Recursively simplify the entire node tree of redundant nodes 
+*   |   Recursively simplify the entire node tree of redundant nodes
 *******************************************************************************/
 
 static bool __simplify_single_node(pNode *child, pNode parent, size_t n)
@@ -250,11 +250,11 @@ static bool __simplify_lists(pNode current)
 
     // Resize children buffer
     size_t new_size = current->n_children - 1 + next->n_children;
-    pNode *buf1 = (pNode *)realloc(current->children, new_size * sizeof(pNode));
+    pNode *buf1 = realloc(current->children, new_size * sizeof(pNode));
     if (!buf1)
     {
         printf("Realloc during simplfy lists failed\n");
-        exit(1);    
+        exit(1);
     }
     current->children = buf1;
 
@@ -267,8 +267,8 @@ static bool __simplify_lists(pNode current)
         if (!buf2)
         {
             printf("Memmove during simplfy lists failed\n");
-            exit(1);    
-        }    
+            exit(1);
+        }
     }
 
     // Append new childs
@@ -378,7 +378,7 @@ void node_simplify(pNode simplified)
         pNode child = simplified->children[n];
         if (!child)
             continue;
-        
+
         // Check each simplify-stage
         __simplify_single_node(&child, simplified, n);
         __simplify_expressions(child);

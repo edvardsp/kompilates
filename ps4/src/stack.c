@@ -23,7 +23,7 @@ void stack_init(pStack stk)
 {
     stk->size = BLOCK_SIZE;
     stk->n = 0;
-    stk->s = (pNode *)calloc(BLOCK_SIZE, sizeof(pNode));
+    stk->s = calloc(BLOCK_SIZE, sizeof(pNode));
     if (!stk->s)
     {
         fprintf(stderr, "calloc of stack_init->s failed\n");
@@ -42,7 +42,7 @@ void stack_push(pStack stk, pNode node)
     {
         printf("Stack resized\n");
         stk->size += BLOCK_SIZE;
-        stk->s = (pNode *)realloc(stk->s, stk->size);
+        stk->s = realloc(stk->s, stk->size);
         if (!stk->s)
         {
             fprintf(stderr, "realloc of stack failed\n");

@@ -13,7 +13,7 @@
 %left '*' '/'
 %nonassoc UMINUS
 
-%token FUNC PRINT RETURN CONTINUE IF THEN ELSE WHILE DO OPENBLOCK CLOSEBLOCK  
+%token FUNC PRINT RETURN CONTINUE IF THEN ELSE WHILE DO OPENBLOCK CLOSEBLOCK
 %token VAR IDENT NUMBER STRING
 
 %%
@@ -58,7 +58,7 @@ declaration_list : declaration                  { node_reduce(DECLARATION_LIST, 
                  | declaration_list declaration { node_reduce(DECLARATION_LIST, NULL, 2); }
                  ;
 
-function : FUNC identifier '(' parameter_list ')' statement { node_reduce(FUNCTION, NULL, 3); }  
+function : FUNC identifier '(' parameter_list ')' statement { node_reduce(FUNCTION, NULL, 3); }
          ;
 
 statement : assignment_statement { node_reduce(STATEMENT, NULL, 1); }
@@ -78,20 +78,20 @@ assignment_statement : identifier ':' '=' expression             { node_reduce(A
                      ;
 return_statement     : RETURN expression                         { node_reduce(RETURN_STATEMENT, NULL, 1); }
                      ;
-print_statement      : PRINT print_list                          { node_reduce(PRINT_STATEMENT, NULL, 1); } 
+print_statement      : PRINT print_list                          { node_reduce(PRINT_STATEMENT, NULL, 1); }
                      ;
-null_statement       : CONTINUE                                  { node_reduce(NULL_STATEMENT, NULL, 0); } 
+null_statement       : CONTINUE                                  { node_reduce(NULL_STATEMENT, NULL, 0); }
                      ;
-if_statement         : IF relation THEN statement                { node_reduce(IF_STATEMENT, NULL, 2); } 
-                     | IF relation THEN statement ELSE statement { node_reduce(IF_STATEMENT, NULL, 3); } 
+if_statement         : IF relation THEN statement                { node_reduce(IF_STATEMENT, NULL, 2); }
+                     | IF relation THEN statement ELSE statement { node_reduce(IF_STATEMENT, NULL, 3); }
                      ;
-while_statement      : WHILE relation DO statement               { node_reduce(WHILE_STATEMENT, NULL, 2); } 
+while_statement      : WHILE relation DO statement               { node_reduce(WHILE_STATEMENT, NULL, 2); }
                      ;
 
 relation : expression '=' expression { node_reduce(RELATION, strdup("="), 2); }
          | expression '<' expression { node_reduce(RELATION, strdup("<"), 2); }
          | expression '>' expression { node_reduce(RELATION, strdup(">"), 2); }
-         ; 
+         ;
 
 expression : expression '+' expression        { node_reduce(EXPRESSION, strdup("+"), 2);  }
            | expression '-' expression        { node_reduce(EXPRESSION, strdup("-"), 2);  }
@@ -111,13 +111,13 @@ print_item : expression { node_reduce(PRINT_ITEM, NULL, 1); }
            | string     { node_reduce(PRINT_ITEM, NULL, 1); }
            ;
 
-identifier : IDENT { node_reduce(IDENTIFIER_DATA, strdup(yytext), 0); } 
+identifier : IDENT { node_reduce(IDENTIFIER_DATA, strdup(yytext), 0); }
            ;
 number : NUMBER {
-           int *buf = (int *)malloc(sizeof(int));
+           int *buf = malloc(sizeof(int));
            *buf = strtol(yytext, NULL, 10);
            node_reduce(NUMBER_DATA, buf, 0);
-         } 
+         }
        ;
 string : STRING { node_reduce(STRING_DATA, strdup(yytext), 0); }
        ;

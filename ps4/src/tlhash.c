@@ -22,7 +22,7 @@ static uint32_t crc32 ( void *input, size_t length );
  ********************************/
 
 
-/* Initializer 
+/* Initializer
  * Returns
  *  ENOMEM - if allocation of table entries fails.
  */
@@ -32,9 +32,7 @@ tlhash_init ( pTlhash tab, size_t n_buckets )
     size_t i;
     tab->n_buckets = n_buckets;
     tab->size = 0;
-    tab->buckets = (pTlhash_elem *) calloc (
-        n_buckets, sizeof(pTlhash_elem)
-    );
+    tab->buckets = calloc(n_buckets, sizeof(pTlhash_elem));
     if ( tab->buckets == NULL )
         return TLHASH_ENOMEM;
     for ( i=0; i<n_buckets; i++ )
@@ -87,7 +85,7 @@ tlhash_insert (
         return TLHASH_EEXIST;
     uint32_t hash = crc32 ( key, key_length );
     size_t bucket = hash % tab->n_buckets;
-    pTlhash_elem element = malloc ( sizeof(Tlhash_elem) );
+    pTlhash_elem element = malloc(sizeof(Tlhash_elem));
     if ( element == NULL )
         return TLHASH_ENOMEM;
     void *key_copy = malloc ( key_length );
