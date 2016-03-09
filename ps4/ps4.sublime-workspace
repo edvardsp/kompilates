@@ -1,0 +1,468 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"glo",
+				"global_list"
+			],
+			[
+				"siz",
+				"sizeof"
+			],
+			[
+				"Sym",
+				"Symtype"
+			],
+			[
+				"C",
+				"CFLAGS"
+			],
+			[
+				"simpl",
+				"simplify"
+			],
+			[
+				"chi",
+				"children"
+			],
+			[
+				"new",
+				"new_data"
+			],
+			[
+				"EXPR",
+				"EXPRDATA_TYPE"
+			],
+			[
+				"NU",
+				"NUMBER_DATA"
+			],
+			[
+				"node",
+				"node_finalize"
+			],
+			[
+				"n",
+				"n_children"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/vslc.c",
+			"settings":
+			{
+				"buffer_size": 1755,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/ir.c",
+			"settings":
+			{
+				"buffer_size": 3821,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Makefile/Make.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "ins",
+		"selected_items":
+		[
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 114.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/edvardsp/Downloads/kompilates/ps4",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc",
+		"/home/edvardsp/Downloads/kompilates/ps4/src"
+	],
+	"file_history":
+	[
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/ir.h",
+		"/home/edvardsp/.config/sublime-text-3/Packages/Alignment/Base File.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
+		"/home/edvardsp/Documents/Kyb/rtkos/Oving5/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/node.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/stack.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/Makefile",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/make.sublime-build",
+		"/home/edvardsp/Downloads/kompilates/ps4/ps4.sublime-project",
+		"/build/glibc-ryFjv0/glibc-2.21/csu/libc-start.c",
+		"/home/edvardsp/.config/sublime-text-3/Packages/SublimeGDB/sublimegdb.py",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/stack.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/stack.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/scanner.l",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ps4.sublime-workspace",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/scanner.l",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/stack.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/scanner.l",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/ps4.sublime-workspace",
+		"/home/edvardsp/Documents/Script/C/pairs.c",
+		"/etc/apt/sources.list.d/google-chrome.list",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/ps4.sublime-project",
+		"/home/edvardsp/.config/sublime-text-3/Packages/SublimeGDB/SublimeGDB.sublime-settings",
+		"/etc/apt/sources.list.d/google.list",
+		"/home/edvardsp/file2",
+		"/home/edvardsp/file1",
+		"/home/edvardsp/Downloads/kompilates/ps3/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/include/nodetypes.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/include/stack.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree.correct",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree.correct",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/prec.tree.correct",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/prec.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.vsl",
+		"/etc/apt/apt.conf.d/99progressbar",
+		"/home/edvardsp/backup/Downloads/kompilates/ps3/Makefile",
+		"/home/edvardsp/backup/Downloads/kompilates/ps3/src/tree.c",
+		"/home/edvardsp/.bashrc"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"global_list",
+			"locals",
+			"stringc",
+			"n_string_list",
+			"locals",
+			"OFILES",
+			"OGEN",
+			"yy_create_buffer (",
+			"yy_create_buffer",
+			"yyerror(",
+			"WARNINGS",
+			"rm",
+			"Popen",
+			"tlhash_element_t",
+			"tlhash_element_t *",
+			"tlhash_t *",
+			"symtype",
+			"symbol_t *",
+			"node_t *",
+			"node_t",
+			"bin",
+			"src",
+			"result",
+			":",
+			"root",
+			"buf",
+			"int",
+			"Return",
+			"element",
+			"colordiff",
+			"child",
+			"root",
+			"__STACK_H",
+			"x",
+			"expr",
+			"x",
+			"data",
+			"type",
+			"PRINT_LIST",
+			"EXPRESSION_LIS",
+			"print_item",
+			"print_list",
+			"print_state",
+			"expr",
+			"->children)",
+			"num_bytes",
+			"next",
+			"parent"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"Tlhash_elem",
+			"pTlhash_elem ",
+			"pTlhash ",
+			"pTlhash",
+			"pSymbol ",
+			"pNode ",
+			":\\n",
+			"size_t",
+			"",
+			"size_t"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/vslc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1755,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								928,
+								928
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 464.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "src/ir.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								216,
+								216
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 172.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "ps4.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 127.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
