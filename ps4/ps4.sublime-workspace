@@ -55,7 +55,7 @@
 			"file": "src/vslc.c",
 			"settings":
 			{
-				"buffer_size": 1755,
+				"buffer_size": 1270,
 				"line_ending": "Unix"
 			}
 		},
@@ -63,7 +63,15 @@
 			"file": "src/ir.c",
 			"settings":
 			{
-				"buffer_size": 3821,
+				"buffer_size": 4069,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "inc/ir.h",
+			"settings":
+			{
+				"buffer_size": 728,
 				"line_ending": "Unix"
 			}
 		}
@@ -99,10 +107,18 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 392.0,
-		"last_filter": "ins",
+		"height": 119.0,
+		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
 			[
 				"ins",
 				"Package Control: Install Package"
@@ -116,7 +132,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 449.0
+		"width": 488.0
 	},
 	"console":
 	{
@@ -143,14 +159,18 @@
 	],
 	"file_history":
 	[
+		"/home/edvardsp/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/stack.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/ir.h",
 		"/home/edvardsp/.config/sublime-text-3/Packages/Alignment/Base File.sublime-settings",
-		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
 		"/home/edvardsp/Documents/Kyb/rtkos/Oving5/Makefile",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/node.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/vslc.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/ir.c",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/stack.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/tlhash.h",
@@ -162,8 +182,6 @@
 		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ir.c",
 		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/ir.h",
 		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/vslc.h",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/stack.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/stack.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/vslc.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/ir.h",
@@ -215,9 +233,10 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -225,6 +244,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			":",
+			"int[0-9][0-9]?_t",
+			"int[0-9][0-9]_t",
+			"int(32|64)_t",
+			"int32",
+			"int64",
+			"_t",
+			"string_index",
+			"stringc",
+			"(\n",
+			"realloc",
+			"malloc",
+			"calloc",
+			"malloc",
 			"global_list",
 			"locals",
 			"stringc",
@@ -280,6 +313,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"",
 			"Tlhash_elem",
 			"pTlhash_elem ",
 			"pTlhash ",
@@ -309,25 +343,84 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1755,
+						"buffer_size": 1270,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								928,
-								928
+								1251,
+								1251
 							]
 						],
 						"settings":
 						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 464.0,
+						"translation.y": 459.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -345,28 +438,174 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3821,
+						"buffer_size": 4069,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								216,
-								216
+								968,
+								969
 							]
 						],
 						"settings":
 						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 332.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "inc/ir.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 728,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								706,
+								706
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"syntax": "Packages/C Improved/C Improved.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 222.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -374,7 +613,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 25.0
 	},
 	"input":
 	{
@@ -422,7 +661,7 @@
 	"project": "ps4.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 46.0
 	},
 	"save_all_on_build": true,
 	"select_file":

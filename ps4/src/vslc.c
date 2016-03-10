@@ -34,7 +34,7 @@ static void cleanup(void)
 {
     yylex_destroy();
     node_destroy(root);
-    destroy_symtab();
+    ir_symtab_destroy();
     stack_destroy(&stack);
 }
 
@@ -48,25 +48,13 @@ int main(void)
     // Simplify the node tree
     node_simplify(root);
 
-    // put the global names in the global sym table
-    find_globals();
+    // 1. put the global names in the global sym table
+    // 2. Obtain all global names
+    // 3. Print the final state of the symbol table(s)
+    ir_find_globals();
+    ir_obtain_all();
+    ir_print_final(root);
 
-    // Iterate over all global symbols, resolve uses of variables:
-    // Obtain all global names
-    size_t n_globals = tlhash_size(global_names);
-    pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);
-    tlhash_values(global_names, (void **)&global_list);
-
-    // Call bind_names on all those which are functions
-    for (size_t i = 0; i < n_globals; i++)
-        if (global_list[i]->type == SYM_FUNCTION)
-            bind_names(global_list[i], global_list[i]->node);
-    free(global_list);
-
-    // Print the final state of the symbol table(s)
-    print_symbols();
-    printf("Bindings:\n");
-    print_bindings(root);
 
     cleanup();
 }
