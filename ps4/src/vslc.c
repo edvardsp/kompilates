@@ -33,10 +33,10 @@ static void init(void)
 
 static void cleanup(void)
 {
-    yylex_destroy();
-    node_destroy(root);
     ir_destroy();
+    node_destroy(root);
     stack_destroy(&stack);
+    yylex_destroy();
 }
 
 int main(void)

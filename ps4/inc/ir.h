@@ -19,7 +19,7 @@ typedef enum {
     SYM_FUNCTION,
     SYM_PARAMETER,
     SYM_LOCAL_VAR
-} Symtype;
+} Symtype, *pSymtype;
 
 typedef struct {
     char *name;
@@ -28,10 +28,7 @@ typedef struct {
     size_t seq;
     size_t nparms;
     pTlhash locals;
-} Symbol;
-
-typedef Symtype* pSymtype;
-typedef Symbol* pSymbol;
+} Symbol, *pSymbol;
 
 /*******************************************************************************
 *       Functions

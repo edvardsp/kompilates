@@ -162,6 +162,34 @@ void ir_init(void)
     tlhash_init(global_names, 16);
 }
 
+
+void ir_destroy(void)
+{
+    size_t n_globals = tlhash_size(global_names);
+    pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);
+    tlhash_values(global_names, (void **)global_list);
+
+    // For all global symbols
+    for (size_t n = 0; n < n_globals; n++)
+    {
+        // If function
+        if (global_list[n]->type == SYM_FUNCTION)
+        {
+            pTlhash local_names = global_list[n]->locals;
+            tlhash_finalize(local_names);
+            free(local_names);
+        }
+        //global_list[n]->node->entry = NULL;
+        //free(global_list[n]);
+    }
+
+    // Release global symbol table and hash
+    tlhash_finalize(global_names);
+    free(global_names);
+    free(global_list);
+}
+
+
 void ir_find_globals(pNode root)
 {
     assert(root != NULL);
@@ -183,11 +211,12 @@ void ir_find_globals(pNode root)
                 // Add to symbol table
                 pNode decl = GET_CHILD(list, j);
                 pSymbol sym = malloc(sizeof(Symbol));
+                decl->entry = sym;
 
                 *sym = (Symbol){
                     .name = GET_DATA(decl),
                     .type = SYM_GLOBAL_VAR,
-                    .node = NULL,
+                    .node = decl,
                     .seq = j,
                     .nparms = 0,
                     .locals = NULL
@@ -205,6 +234,7 @@ void ir_find_globals(pNode root)
                           ? GET_SIZE(GET_CHILD(entry, 1))
                           : 0;
             pSymbol sym = malloc(sizeof(Symbol));
+            ident->entry = sym;
             pTlhash locals = malloc(sizeof(Tlhash));
             tlhash_init(locals, 16);
 
@@ -223,6 +253,7 @@ void ir_find_globals(pNode root)
                 // Add to locals, and sequence
                 pNode param = GET_CHILD(GET_CHILD(entry, 1), k);
                 pSymbol psym = malloc(sizeof(Symbol));
+                param->entry = sym;
 
                 *psym = (Symbol) {
                     .name = GET_DATA(param),
@@ -247,6 +278,7 @@ void ir_bind_names(pSymbol func, pNode root)
     assert(func != NULL);
     assert(root != NULL);
 
+    // Setup scoping
     Scopes scopes = {
         .lvl = 0,
         .curr_seq = 0,
@@ -260,13 +292,10 @@ void ir_bind_names(pSymbol func, pNode root)
     for (size_t i = 0; i < GET_SIZE(block); i++)
         traverse_node(func, GET_CHILD(block, i), &scopes);
 
-}
-
-
-void ir_destroy(void)
-{
-    tlhash_finalize(global_names);
-    free(global_names);
+    // Free scoping
+    tlhash_finalize(*scopes.scp);
+    free(*scopes.scp);
+    free(scopes.scp);
 }
 
 

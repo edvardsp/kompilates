@@ -8,7 +8,7 @@
 	"settings":
 	{
 		"sublimegdb_workingdir": "${folder:${project_path:bin/vslc.out}}",
-		"sublimegdb_arguments": "< ${project_path:vsl_programs/euclid.vsl}",
+		"sublimegdb_arguments": "< ${project_path:vsl_programs/nested_scopes.vsl}",
         "sublimegdb_commandline": "gdb --nx --readnow --interpreter=mi ./vslc.out",
         "sublimegdb_layout":
         {
