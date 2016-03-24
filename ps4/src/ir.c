@@ -178,8 +178,8 @@ void ir_destroy(void)
             tlhash_finalize(local_names);
             free(local_names);
         }
-        //global_list[n]->node->entry = NULL;
-        //free(global_list[n]);
+        global_list[n]->node->entry = NULL;
+        free(global_list[n]);
     }
 
     // Release global symbol table and hash
