@@ -78,7 +78,6 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
             pNode ident = GET_CHILD(decl, i);
             pSymbol sym = malloc(sizeof(Symbol));
 
-            // TODO: fix seq
             *sym = (Symbol){
                 .name = GET_DATA(ident),
                 .type = SYM_LOCAL_VAR,
@@ -211,12 +210,11 @@ void ir_find_globals(pNode root)
                 // Add to symbol table
                 pNode decl = GET_CHILD(list, j);
                 pSymbol sym = malloc(sizeof(Symbol));
-                decl->entry = sym;
 
                 *sym = (Symbol){
                     .name = GET_DATA(decl),
                     .type = SYM_GLOBAL_VAR,
-                    .node = decl,
+                    .node = entry,
                     .seq = j,
                     .nparms = 0,
                     .locals = NULL
@@ -234,7 +232,6 @@ void ir_find_globals(pNode root)
                           ? GET_SIZE(GET_CHILD(entry, 1))
                           : 0;
             pSymbol sym = malloc(sizeof(Symbol));
-            ident->entry = sym;
             pTlhash locals = malloc(sizeof(Tlhash));
             tlhash_init(locals, 16);
 
@@ -253,7 +250,6 @@ void ir_find_globals(pNode root)
                 // Add to locals, and sequence
                 pNode param = GET_CHILD(GET_CHILD(entry, 1), k);
                 pSymbol psym = malloc(sizeof(Symbol));
-                param->entry = sym;
 
                 *psym = (Symbol) {
                     .name = GET_DATA(param),
@@ -399,8 +395,11 @@ void ir_obtain_all(pNode root)
 
     // Call bind_names on all those which are functions
     for (size_t i = 0; i < n_globals; i++)
-        if (global_list[i]->type == SYM_FUNCTION)
-            ir_bind_names(global_list[i], global_list[i]->node);
+    {
+        pSymbol sym = global_list[i];
+        if (sym->type == SYM_FUNCTION)
+            ir_bind_names(sym, sym->node);
+    }
     free(global_list);
 }
 
