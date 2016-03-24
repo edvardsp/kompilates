@@ -1,12 +1,17 @@
-TARGETS=$(shell ls *.vsl | sed s/\.vsl/\.tree/g)
+TARGETS := $(shell ls *.vsl | sed s/\.vsl/\.table/g)
+
+TARGET ?=
+
 all: ${TARGETS}
-%: %.s
-%.tree: %.vsl
-	../src/vslc <$*.vsl > $*.tree
+
+%.table: %.vsl
+	../bin/vslc.out <$*.vsl > $*.table
+
 clean:
-	-rm -f *.tree
-purge: clean
-	-rm -f ${TARGETS}
+	-rm -f *.table
 
 test:
-	$(foreach var, $(TARGETS), diff $(var) $(var).correct | colordiff; )
+	diff ${TARGET}.table ${TARGET}.table.correct | colordiff
+
+test_all:
+	$(foreach var, $(TARGETS), diff $(var) $(var).correct | colordiff;)

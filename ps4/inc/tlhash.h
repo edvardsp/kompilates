@@ -4,13 +4,15 @@
 #include <stddef.h>
 
 typedef struct el {
-    void *key, *value;
+    void *key;
+    void *value;
     size_t key_length;
     struct el *next;
 } Tlhash_elem;
 
 typedef struct {
-    size_t n_buckets, size;
+    size_t n_buckets;
+    size_t size;
     Tlhash_elem **buckets;
 } Tlhash;
 

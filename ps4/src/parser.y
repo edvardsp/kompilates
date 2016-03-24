@@ -58,7 +58,7 @@ declaration_list : declaration                  { node_reduce(DECLARATION_LIST, 
                  | declaration_list declaration { node_reduce(DECLARATION_LIST, NULL, 2); }
                  ;
 
-function : FUNC identifier '(' parameter_list ')' statement { node_reduce(FUNCTION, NULL, 3); }
+function : FUNC identifier '(' parameter_list ')' block { node_reduce(FUNCTION, NULL, 3); }
          ;
 
 statement : assignment_statement { node_reduce(STATEMENT, NULL, 1); }

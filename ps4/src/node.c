@@ -111,6 +111,7 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
 
     nd->type = type;
     nd->data = data;
+    nd->index = 0;
     nd->entry = NULL;
     nd->n_children = n_children;
     if (n_children > 0)

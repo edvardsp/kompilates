@@ -28,13 +28,14 @@ Stack stack;
 static void init(void)
 {
     stack_init(&stack);
+    ir_init();
 }
 
 static void cleanup(void)
 {
     yylex_destroy();
     node_destroy(root);
-    ir_symtab_destroy();
+    ir_destroy();
     stack_destroy(&stack);
 }
 
@@ -51,8 +52,8 @@ int main(void)
     // 1. put the global names in the global sym table
     // 2. Obtain all global names
     // 3. Print the final state of the symbol table(s)
-    ir_find_globals();
-    ir_obtain_all();
+    ir_find_globals(root);
+    ir_obtain_all(root);
     ir_print_final(root);
 
 

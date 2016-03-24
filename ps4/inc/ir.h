@@ -1,16 +1,27 @@
 #ifndef IR_H
 #define IR_H
 
-#include <stddef.h>
+/*******************************************************************************
+*       Includes
+*******************************************************************************/
+
+#include <stddef.h> // for size_t
 
 #include "node.h"
 #include "tlhash.h"
 
+/*******************************************************************************
+*       Types
+*******************************************************************************/
+
 typedef enum {
-    SYM_GLOBAL_VAR, SYM_FUNCTION, SYM_PARAMETER, SYM_LOCAL_VAR
+    SYM_GLOBAL_VAR,
+    SYM_FUNCTION,
+    SYM_PARAMETER,
+    SYM_LOCAL_VAR
 } Symtype;
 
-typedef struct s {
+typedef struct {
     char *name;
     Symtype type;
     pNode node;
@@ -22,17 +33,17 @@ typedef struct s {
 typedef Symtype* pSymtype;
 typedef Symbol* pSymbol;
 
-extern pTlhash global_names;
-extern char **string_list;
-extern size_t n_string_list;
-extern size_t stringc;
+/*******************************************************************************
+*       Functions
+*******************************************************************************/
 
-void ir_find_globals  (void);
+void ir_init          (void);
+void ir_find_globals  (pNode root);
 void ir_bind_names    (pSymbol function, pNode root);
 void ir_print_symbols (void);
 void ir_print_bindings(pNode root);
-void ir_symtab_destroy(void);
-void ir_obtain_all    (void);
+void ir_destroy       (void);
+void ir_obtain_all    (pNode root);
 void ir_print_final   (pNode root);
 
 #endif

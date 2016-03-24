@@ -1,0 +1,22 @@
+String table:
+0: "a="
+-- 
+Globals:
+simplify: function 0:
+	2 local variables, 2 are parameters:
+	e: parameter 0
+	f: parameter 1
+a: global variable
+b: global variable
+c: global variable
+d: global variable
+-- 
+Bindings:
+Linked global var 'a'
+Linked string 0
+Linked global var 'a'
+Linked global var 'a'
+Linked global var 'b'
+Linked function 0 ('simplify')
+Linked global var 'c'
+Linked global var 'd'
