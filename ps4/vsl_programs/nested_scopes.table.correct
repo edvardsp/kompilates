@@ -3,16 +3,16 @@ String table:
 1: "a="
 2: "a="
 3: "a="
--- 
+--
 Globals:
 a: global variable
 nest: function 0:
 	4 local variables, 1 are parameters:
 	a: parameter 0
 	a: local var 0
-	a: local var 2
 	a: local var 1
--- 
+	a: local var 2
+--
 Bindings:
 Linked string 0
 Linked parameter 0 ('a')

@@ -6,13 +6,13 @@ String table:
 4: "are relative primes"
 --
 Globals:
-gcd: function 1:
-	3 local variables, 2 are parameters:
-	a: parameter 0
-	g: local var 0
-	b: parameter 1
 euclid: function 0:
 	2 local variables, 2 are parameters:
+	a: parameter 0
+	b: parameter 1
+gcd: function 1:
+	3 local variables, 2 are parameters:
+	g: local var 0
 	a: parameter 0
 	b: parameter 1
 --

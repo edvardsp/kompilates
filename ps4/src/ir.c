@@ -64,14 +64,13 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
     {
     case DECLARATION:
     {
+        // Create symbol and add to correct symbol tables
         pNode decl = GET_CHILD(node, 0);
         for (size_t i = 0; i < GET_SIZE(decl); i++)
         {
-            pNode ident = GET_CHILD(decl, i);
             pSymbol sym = malloc(sizeof(Symbol));
-
             *sym = (Symbol){
-                .name = GET_DATA(ident),
+                .name = GET_DATA(GET_CHILD(decl, i)),
                 .type = SYM_LOCAL_VAR,
                 .node = node,
                 .seq = scps->curr_seq++,
@@ -91,7 +90,7 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
     case IDENTIFIER_DATA:
     {
         pSymbol sym;
-        char *name = node->data;
+        char *name = GET_DATA(node);
 
         // Lookup name in order:
         // 1. scopes, descending order
@@ -185,7 +184,6 @@ void ir_destroy(void)
         }
 
         // Release the global symbol
-        global_list[n]->node->entry = NULL;
         free(global_list[n]);
     }
 
@@ -219,11 +217,9 @@ void ir_find_globals(pNode root)
             for (size_t j = 0; j < GET_SIZE(list); j++)
             {
                 // Add to symbol table
-                pNode decl = GET_CHILD(list, j);
                 pSymbol sym = malloc(sizeof(Symbol));
-
                 *sym = (Symbol){
-                    .name = GET_DATA(decl),
+                    .name = GET_DATA(GET_CHILD(list, j)),
                     .type = SYM_GLOBAL_VAR,
                     .node = entry,
                     .seq = j,
@@ -311,7 +307,7 @@ void ir_print_symbols(void)
     printf("String table:\n");
     for (size_t s = 0; s < stringc; s++)
         printf("%zu: %s\n", s, string_list[s]);
-    printf("-- \n");
+    printf("--\n");
 
     printf("Globals:\n");
     size_t n_globals = tlhash_size(global_names);
@@ -355,7 +351,7 @@ void ir_print_symbols(void)
         }
     }
     free(global_list);
-    printf("-- \n");
+    printf("--\n");
 }
 
 
@@ -383,8 +379,7 @@ void ir_print_bindings(pNode root)
             break;
         }
     } else if (root->type == STRING_DATA) {
-        size_t string_index = GET_IND(root);
-        if (string_index < stringc)
+        if (GET_IND(root) < stringc)
             printf("Linked string %zu\n", GET_IND(root));
         else
             printf("(Not an indexed string)\n");

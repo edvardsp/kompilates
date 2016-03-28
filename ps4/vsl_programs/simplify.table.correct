@@ -1,16 +1,16 @@
 String table:
 0: "a="
--- 
+--
 Globals:
-a: global variable
 simplify: function 0:
 	2 local variables, 2 are parameters:
-	f: parameter 1
 	e: parameter 0
-d: global variable
-c: global variable
+	f: parameter 1
+a: global variable
 b: global variable
--- 
+c: global variable
+d: global variable
+--
 Bindings:
 Linked global var 'a'
 Linked string 0

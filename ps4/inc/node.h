@@ -5,7 +5,7 @@
 *       Includes
 *******************************************************************************/
 
-#include <stddef.h>
+#include <stddef.h> // for size_t
 
 #include "nodetypes.h"
 
@@ -20,19 +20,19 @@ typedef struct _node {
     void *entry;
     size_t n_children;
     struct _node **children;
-} Node;
-
-typedef Node* pNode;
+} Node, *pNode;
 
 /*******************************************************************************
 *       Functions
 *******************************************************************************/
 
-#define GET_CHILD(node, i) (node)->children[(i)]
-#define GET_TYPE(node) (node)->type
-#define GET_SIZE(node) (node)->n_children
-#define GET_DATA(node) (node)->data
-#define GET_IND(node) (node)->index
+#define GET_CHILD(node, i) ((node)->children[(i)])
+#define GET_CHILDS(node)   ((node)->children)
+#define GET_ENTRY(node)    ((node)->entry)
+#define GET_TYPE(node)     ((node)->type)
+#define GET_SIZE(node)     ((node)->n_children)
+#define GET_DATA(node)     ((node)->data)
+#define GET_IND(node)      ((node)->index)
 
 /*******************************************************************************
 *       Functions

@@ -16,37 +16,37 @@
 *       Defines
 *******************************************************************************/
 
-#define TOINT(node) (*(int *)((node)->data))
+#define TOINT(node) (*(int *)(GET_DATA(node)))
 
 
 #define SINGLE_TYPE(node) \
-    ((node)->type == GLOBAL         || \
-     (node)->type == STATEMENT      || \
-     (node)->type == PRINT_ITEM     || \
-     (node)->type == ARGUMENT_LIST  || \
-     (node)->type == PARAMETER_LIST)
+    (GET_TYPE(node) == GLOBAL         || \
+     GET_TYPE(node) == STATEMENT      || \
+     GET_TYPE(node) == PRINT_ITEM     || \
+     GET_TYPE(node) == ARGUMENT_LIST  || \
+     GET_TYPE(node) == PARAMETER_LIST)
 
 
 #define LIST_TYPE(node) \
-    ((node)->type == PRINT_LIST       || \
-     (node)->type == GLOBAL_LIST      || \
-     (node)->type == VARIABLE_LIST    || \
-     (node)->type == STATEMENT_LIST   || \
-     (node)->type == EXPRESSION_LIST  || \
-     (node)->type == PRINT_STATEMENT  || \
-     (node)->type == DECLARATION_LIST)
+    (GET_TYPE(node) == PRINT_LIST       || \
+     GET_TYPE(node) == GLOBAL_LIST      || \
+     GET_TYPE(node) == VARIABLE_LIST    || \
+     GET_TYPE(node) == STATEMENT_LIST   || \
+     GET_TYPE(node) == EXPRESSION_LIST  || \
+     GET_TYPE(node) == PRINT_STATEMENT  || \
+     GET_TYPE(node) == DECLARATION_LIST)
 
 
 #define EXPRDATA_TYPE(node) \
-    ((node)->type == NUMBER_DATA  || \
-     (node)->type == IDENTIFIER_DATA)
+    (GET_TYPE(node) == NUMBER_DATA  || \
+     GET_TYPE(node) == IDENTIFIER_DATA)
 
 
 #define STRDATA_TYPE(node) \
-    ((node)->type == RELATION     || \
-     (node)->type == EXPRESSION   || \
-     (node)->type == STRING_DATA  || \
-     (node)->type == IDENTIFIER_DATA)
+    (GET_TYPE(node) == RELATION     || \
+     GET_TYPE(node) == EXPRESSION   || \
+     GET_TYPE(node) == STRING_DATA  || \
+     GET_TYPE(node) == IDENTIFIER_DATA)
 
 /*******************************************************************************
 *       Functions
@@ -79,20 +79,20 @@ void node_print(pNode curr, int nesting)
     if (curr != NULL)
     {
         /* Print the type of node indented by the nesting level */
-        printf("%*c%s", nesting, ' ', node_string[curr->type]);
+        printf("%*c%s", nesting, ' ', node_string[GET_TYPE(curr)]);
 
         /* For identifiers, strings, expressions and numbers,
          * print the data element also
          */
         if (STRDATA_TYPE(curr))
-            printf("(%s)", (char *)curr->data);
-        else if (curr->type == NUMBER_DATA)
-            printf("(%i)", *(int *)curr->data);
+            printf("(%s)", (char *)GET_DATA(curr));
+        else if (GET_TYPE(curr) == NUMBER_DATA)
+            printf("(%i)", *(int *)GET_DATA(curr));
 
         /* Make a new line, and traverse the node's children in the same manner */
         putchar('\n');
-        for (size_t i = 0; i < curr->n_children; i++)
-            node_print(curr->children[i], nesting + 1);
+        for (size_t i = 0; i < GET_SIZE(curr); i++)
+            node_print(GET_CHILD(curr, i), nesting + 1);
     }
     else
         printf("%*c%p\n", nesting, ' ', curr);
@@ -109,17 +109,15 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
     va_list argp;
     va_start(argp, n_children);
 
-    nd->type = type;
-    nd->data = data;
-    nd->index = 0;
-    nd->entry = NULL;
-    nd->n_children = n_children;
+    GET_TYPE(nd)  = type;
+    GET_DATA(nd)  = data;
+    GET_IND(nd)   = 0;
+    GET_ENTRY(nd) = NULL;
+    GET_SIZE(nd)  = n_children;
     if (n_children > 0)
-        nd->children = calloc(n_children, sizeof(pNode));
+        GET_CHILDS(nd) = calloc(n_children, sizeof(pNode));
     for (size_t i = 0; i < n_children; i++)
-    {
-        nd->children[i] = va_arg(argp, pNode);
-    }
+        GET_CHILD(nd, i) = va_arg(argp, pNode);
 
     va_end(argp);
 }
@@ -179,9 +177,9 @@ void node_finalize(pNode discard)
 {
     assert(discard != NULL);
 
-    free(discard->data);
-    //free(discard->entry); -- We let ir.c take care of this
-    free(discard->children);
+    free(GET_DATA(discard));
+    //free(GET_ENTRY(discard)); -- We let ir.c take care of this
+    free(GET_CHILDS(discard));
     free(discard);
 }
 
@@ -195,10 +193,10 @@ void node_destroy(pNode discard)
     if (!discard)
         return;
 
-    if (discard->children)
+    if (GET_CHILDS(discard))
     {
-        for (size_t i = 0; i < discard->n_children; i++)
-            node_destroy(discard->children[i]);
+        for (size_t i = 0; i < GET_SIZE(discard); i++)
+            node_destroy(GET_CHILD(discard, i));
     }
     node_finalize(discard);
 }
@@ -212,14 +210,14 @@ static bool __simplify_single_node(pNode *child, pNode parent, size_t n)
 {
     if (SINGLE_TYPE(*child))
     {
-        assert((*child)->n_children == 1);
+        assert(GET_SIZE(*child) == 1);
 
         // Update children array and free memory
-        parent->children[n] = (*child)->children[0];
+        GET_CHILD(parent, n) = GET_CHILD(*child, 0);
         node_finalize(*child);
 
         // Update the pointer
-        *child = parent->children[n];
+        *child = GET_CHILD(parent, n);
 
         return true;
     }
@@ -235,9 +233,9 @@ static bool __simplify_lists(pNode current)
     // Find child with same type
     size_t n = 0;
     pNode next = NULL;
-    for ( ; n < current->n_children; n++)
+    for ( ; n < GET_SIZE(current); n++)
     {
-        pNode same = current->children[n];
+        pNode same = GET_CHILD(current, n);
         if (same && !LIST_TYPE(same))
             continue;
         next = same;
@@ -250,21 +248,24 @@ static bool __simplify_lists(pNode current)
     __simplify_lists(next);
 
     // Resize children buffer
-    size_t new_size = current->n_children - 1 + next->n_children;
-    pNode *buf1 = realloc(current->children, new_size * sizeof(pNode));
+    size_t new_size = GET_SIZE(current) - 1 + GET_SIZE(next);
+    pNode *buf1 = realloc(GET_CHILDS(current), new_size * sizeof(pNode));
     if (!buf1)
     {
         printf("Realloc during simplfy lists failed\n");
         exit(1);
     }
-    current->children = buf1;
+    GET_CHILDS(current) = buf1;
 
     // Extend gap of next node for possible more children
-    size_t extend = next->n_children - 1;
-    if (extend > 0 && n < current->n_children - 1)
+    size_t extend = GET_SIZE(next) - 1;
+    if (extend > 0 && n < GET_SIZE(current) - 1)
     {
-        size_t nbytes = sizeof(pNode) * (current->n_children - n - 1);
-        pNode *buf2 = memmove(&current->children[n+1+extend], &current->children[n+1], nbytes);
+        pNode *buf2 = memmove(
+            &GET_CHILD(current, n + 1 + extend),
+            &GET_CHILD(current, n + 1),
+            sizeof(pNode) * (GET_SIZE(current) - n - 1)
+        );
         if (!buf2)
         {
             printf("Memmove during simplfy lists failed\n");
@@ -273,12 +274,9 @@ static bool __simplify_lists(pNode current)
     }
 
     // Append new childs
-    for (size_t i = 0; i < next->n_children; i++)
-    {
-        size_t index = n + i;
-        current->children[index] = next->children[i];
-    }
-    current->n_children = new_size;
+    for (size_t i = 0; i < GET_SIZE(next); i++)
+        GET_CHILD(current, n + i) = GET_CHILD(next, i);
+    GET_SIZE(current) = new_size;
 
     // Free next node
     node_finalize(next);
@@ -290,61 +288,58 @@ static bool __simplify_lists(pNode current)
 static bool __simplify_expressions(pNode expr)
 {
     // Only work on epxression-nodes
-    if (expr->type != EXPRESSION)
+    if (GET_TYPE(expr) != EXPRESSION)
         return false;
 
     // Recursively work from down to up
-    for (size_t i = 0; i < expr->n_children; i++)
-    {
-        pNode child = expr->children[i];
-        if (child)
-           __simplify_expressions(child);
-    }
+    for (size_t i = 0; i < GET_SIZE(expr); i++)
+        if (GET_CHILD(expr, i))
+           __simplify_expressions(GET_CHILD(expr, i));
 
-    if (expr->n_children == 1)
+    if (GET_SIZE(expr) == 1)
     {
-        pNode child = expr->children[0];
+        pNode child = GET_CHILD(expr, 0);
         // Remove null expressions and transfer data
-        if (EXPRDATA_TYPE(child) && expr->data == NULL)
+        if (EXPRDATA_TYPE(child) && GET_DATA(expr) == NULL)
         {
             // Transfer data to expr and release child
-            if (child->type == NUMBER_DATA)
+            if (GET_TYPE(child) == NUMBER_DATA)
             {
-                expr->data = malloc(sizeof(int));
-                *(int *)expr->data = *(int *)child->data;
+                GET_DATA(expr) = malloc(sizeof(int));
+                *(int *)GET_DATA(expr) = *(int *)GET_DATA(child);
             }
             else
-                expr->data = strdup(child->data);
-            expr->type = child->type;
-            expr->n_children = 0;
+                GET_DATA(expr) = strdup(GET_DATA(child));
+            GET_TYPE(expr) = GET_TYPE(child);
+            GET_SIZE(expr) = 0;
 
             node_finalize(child);
         }
         // or simplify unary minus nodes
-        else if (child->type == NUMBER_DATA && *(char *)expr->data == '-')
+        else if (GET_TYPE(child) == NUMBER_DATA && *(char *)GET_DATA(expr) == '-')
         {
-            expr->data = realloc(expr->data, sizeof(int));
+            GET_DATA(expr) = realloc(GET_DATA(expr), sizeof(int));
 
             // Transfer data to expr and release child
-            expr->type = child->type;
-            expr->n_children = 0;
-            *(int *)expr->data = -1 * *(int *)child->data;
+            GET_TYPE(expr) = GET_TYPE(child);
+            GET_SIZE(expr) = 0;
+            *(int *)GET_DATA(expr) = -1 * *(int *)GET_DATA(child);
 
             node_finalize(child);
         }
     }
     // Simplify const expr with operands
-    else if (expr->n_children == 2 && expr->data)
+    else if (GET_SIZE(expr) == 2 && GET_DATA(expr))
     {
         // Sanity check
-        pNode ch1 = expr->children[0];
-        pNode ch2 = expr->children[1];
-        if (ch1->type != NUMBER_DATA || ch2->type != NUMBER_DATA)
+        pNode ch1 = GET_CHILD(expr, 0);
+        pNode ch2 = GET_CHILD(expr, 1);
+        if (GET_TYPE(ch1) != NUMBER_DATA || GET_TYPE(ch2) != NUMBER_DATA)
             return false;
 
         // Calculate new value
         int value;
-        char op = *(char *)expr->data;
+        char op = *(char *)GET_DATA(expr);
         switch (op)
         {
         case '+': value = TOINT(ch1) + TOINT(ch2); break;
@@ -356,10 +351,10 @@ static bool __simplify_expressions(pNode expr)
         }
 
         // Update and transfer
-        expr->data = realloc(expr->data, sizeof(int));
-        expr->type = NUMBER_DATA;
-        expr->n_children = 0;
-        *(int *)expr->data = value;
+        GET_DATA(expr) = realloc(GET_DATA(expr), sizeof(int));
+        GET_TYPE(expr) = NUMBER_DATA;
+        GET_SIZE(expr) = 0;
+        *(int *)GET_DATA(expr) = value;
 
         node_finalize(ch1);
         node_finalize(ch2);
@@ -373,10 +368,10 @@ static bool __simplify_expressions(pNode expr)
 void node_simplify(pNode simplified)
 {
     // For each child
-    for (size_t n = 0; n < simplified->n_children; n++)
+    for (size_t n = 0; n < GET_SIZE(simplified); n++)
     {
         // If valid
-        pNode child = simplified->children[n];
+        pNode child = GET_CHILD(simplified, n);
         if (!child)
             continue;
 

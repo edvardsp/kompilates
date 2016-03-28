@@ -4,7 +4,7 @@ String table:
 2: "is"
 3: "and"
 4: "are relative primes"
--- 
+--
 Globals:
 euclid: function 0:
 	2 local variables, 2 are parameters:
@@ -15,7 +15,7 @@ gcd: function 1:
 	g: local var 0
 	a: parameter 0
 	b: parameter 1
--- 
+--
 Bindings:
 Linked parameter 0 ('a')
 Linked parameter 0 ('a')

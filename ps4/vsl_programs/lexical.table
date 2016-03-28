@@ -13,14 +13,14 @@ String table:
 11: "/"
 12: ":="
 13: "Skip..."
--- 
+--
 Globals:
 main: function 0:
 	3 local variables, 0 are parameters:
 	_a1: local var 1
 	a: local var 0
 	a_2: local var 2
--- 
+--
 Bindings:
 Linked string 0
 Linked string 1
