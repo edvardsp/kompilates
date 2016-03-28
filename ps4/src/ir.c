@@ -55,14 +55,6 @@ static void rand_str(char *dest, size_t length) {
     *dest = '\0';
 }
 
-static void move_string_list(pNode node)
-{
-    string_list[stringc] = GET_DATA(node);
-    GET_DATA(node) = NULL;
-    GET_IND(node) = stringc++;
-    string_list = realloc(string_list, sizeof(char *) * (stringc + 1));
-}
-
 
 static void traverse_node(pSymbol func, pNode node, pScopes scps)
 {
@@ -101,51 +93,55 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
         pSymbol sym;
         char *name = node->data;
 
-        // Lookup name in locale
-        size_t i = scps->lvl;
-        do {
-            LOOKUP_SYM(scps->scp[i], name, &sym);
-            if (sym) goto found;
-        } while (i-- != 0);
-        LOOKUP_SYM(func->locals, name, &sym);
-        if (sym) goto found;
-        LOOKUP_SYM(global_names, name, &sym);
-        if (sym) goto found;
+        // Lookup name in order:
+        // 1. scopes, descending order
+        // 2. function locales
+        // 3. globale locales
+        for (size_t i = 0; i <= scps->lvl; i++)
+        {
+            LOOKUP_SYM(scps->scp[scps->lvl - i], name, &sym);
+            if (sym) goto sym_found;
+        }
+        LOOKUP_SYM(func->locals, name, &sym); if (sym) goto sym_found;
+        LOOKUP_SYM(global_names, name, &sym); if (sym) goto sym_found;
         fprintf(stderr, "Error: Symbol `%s` doesn't exist\n", name);
-        return;
-        //exit(1);
+        exit(1);
 
-    found:
+    sym_found:
         node->entry = sym;
         return;
     }
     case STRING_DATA:
-        move_string_list(node);
+        // Move string from node to string_list, and assign index to node
+        string_list[stringc] = GET_DATA(node);
+        GET_DATA(node) = NULL;
+        GET_IND(node) = stringc++;
+        string_list = realloc(string_list, sizeof(char *) * (stringc + 1));
         return;
 
-    case BLOCK:
+    default: {}
+    }
+
+    // If block setup next scope
+    if (GET_TYPE(node) == BLOCK)
     {
-        // Setup next scope
         size_t lvl = ++scps->lvl;
         scps->scp = realloc(scps->scp, sizeof(pTlhash) * (lvl + 1));
         GET_SCP(scps) = malloc(sizeof(Tlhash));
         tlhash_init(GET_SCP(scps), 16);
+    }
 
-        // Traverse tree pre-order
-        for (size_t i = 0; i < GET_SIZE(node); i++)
-            traverse_node(func, GET_CHILD(node, i), scps);
+    // Traverse tree pre-order
+    for (size_t i = 0; i < GET_SIZE(node); i++)
+        traverse_node(func, GET_CHILD(node, i), scps);
 
-        // Cleanup
+    // Cleanup after block
+    if (GET_TYPE(node) == BLOCK)
+    {
         tlhash_finalize(GET_SCP(scps));
         free(GET_SCP(scps));
         scps->lvl--;
 
-        return;
-    }
-    default:
-        // Traverse tree pre-order
-        for (size_t i = 0; i < GET_SIZE(node); i++)
-            traverse_node(func, GET_CHILD(node, i), scps);
     }
 
 }
@@ -179,6 +175,7 @@ void ir_destroy(void)
             pSymbol *local_list = malloc(sizeof(pSymbol) * n_locals);
             tlhash_values(local_names, (void **)local_list);
 
+            // Release all symbols in function locale
             for (size_t m = 0; m < n_locals; m++)
                 free(local_list[m]);
 
@@ -187,6 +184,7 @@ void ir_destroy(void)
             free(local_list);
         }
 
+        // Release the global symbol
         global_list[n]->node->entry = NULL;
         free(global_list[n]);
     }
