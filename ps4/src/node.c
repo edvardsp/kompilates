@@ -180,7 +180,7 @@ void node_finalize(pNode discard)
     assert(discard != NULL);
 
     free(discard->data);
-    free(discard->entry);
+    //free(discard->entry); -- We let ir.c take care of this
     free(discard->children);
     free(discard);
 }

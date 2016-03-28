@@ -175,9 +175,18 @@ void ir_destroy(void)
         if (global_list[n]->type == SYM_FUNCTION)
         {
             pTlhash local_names = global_list[n]->locals;
+            size_t n_locals = tlhash_size(local_names);
+            pSymbol *local_list = malloc(sizeof(pSymbol) * n_locals);
+            tlhash_values(local_names, (void **)local_list);
+
+            for (size_t m = 0; m < n_locals; m++)
+                free(local_list[m]);
+
             tlhash_finalize(local_names);
             free(local_names);
+            free(local_list);
         }
+
         global_list[n]->node->entry = NULL;
         free(global_list[n]);
     }
@@ -186,6 +195,10 @@ void ir_destroy(void)
     tlhash_finalize(global_names);
     free(global_names);
     free(global_list);
+
+    for (size_t i = 0; i < stringc; i++)
+        free(string_list[i]);
+    free(string_list);
 }
 
 
