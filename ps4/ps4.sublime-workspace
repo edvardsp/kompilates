@@ -8,6 +8,42 @@
 				"global_list"
 			],
 			[
+				"tlha",
+				"tlhash_finalize"
+			],
+			[
+				"glob",
+				"global_list"
+			],
+			[
+				"gl",
+				"global_list"
+			],
+			[
+				"stri",
+				"string_list"
+			],
+			[
+				"GET",
+				"GET_DATA"
+			],
+			[
+				"subl",
+				"sublimegdb_session_group"
+			],
+			[
+				"sub",
+				"sublimegdb_file_group"
+			],
+			[
+				"n_",
+				"n_children"
+			],
+			[
+				"pri",
+				"println	println!(…)"
+			],
+			[
 				"siz",
 				"sizeof"
 			],
@@ -52,18 +88,18 @@
 	"buffers":
 	[
 		{
-			"file": "src/vslc.c",
+			"file": "src/ir.c",
 			"settings":
 			{
-				"buffer_size": 1270,
+				"buffer_size": 11816,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/ir.c",
+			"contents": "\n/*******************************************************************************\n*       Includes\n*******************************************************************************/\n\n#include <assert.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\n\n#include \"ir.h\"\n#include \"node.h\"\n#include \"tlhash.h\"\n\n/*******************************************************************************\n*       Defines\n*******************************************************************************/\n\n#define INSERT_SYM(table, key, sym) tlhash_insert((table), (key), strlen(key)+1, (sym))\n#define LOOKUP_SYM(table, key, sym) tlhash_lookup((table), (key), strlen(key)+1, (void **)(sym))\n#define GET_SCP(scope) (scope)->scp[(scope)->lvl]\n\n/*******************************************************************************\n*       Types\n*******************************************************************************/\n\ntypedef struct {\n    size_t lvl;\n    size_t curr_seq;\n    pTlhash *scp;\n} Scopes, *pScopes;\n\n/*******************************************************************************\n*       Globals\n*******************************************************************************/\n\nstatic pTlhash global_names;\nstatic char **string_list;\nstatic size_t stringc = 0;\n//static size_t n_string_list = 8;\n\n/*******************************************************************************\n*       Static Functions\n*******************************************************************************/\n\nstatic void rand_str(char *dest, size_t length) {\n    char charset[] = \"0123456789\"\n                     \"abcdefghijklmnopqrstuvwxyz\"\n                     \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n\n    while (length-- > 0) {\n        size_t index = (size_t)rand() % (sizeof(charset) - 1);\n        *dest++ = charset[index];\n    }\n    *dest = '\\0';\n}\n\nstatic void move_string_list(pNode node)\n{\n    string_list[stringc] = GET_DATA(node);\n    GET_DATA(node) = NULL;\n    GET_IND(node) = stringc++;\n    string_list = realloc(string_list, sizeof(char *) * (stringc + 1));\n}\n\n\nstatic void traverse_node(pSymbol func, pNode node, pScopes scps)\n{\n    assert(node != NULL);\n\n    switch (GET_TYPE(node))\n    {\n    case DECLARATION:\n    {\n        pNode decl = GET_CHILD(node, 0);\n        for (size_t i = 0; i < GET_SIZE(decl); i++)\n        {\n            pNode ident = GET_CHILD(decl, i);\n            pSymbol sym = malloc(sizeof(Symbol));\n\n            *sym = (Symbol){\n                .name = GET_DATA(ident),\n                .type = SYM_LOCAL_VAR,\n                .node = node,\n                .seq = scps->curr_seq++,\n                .nparms = 0,\n                .locals = NULL\n            };\n\n            // TODO: rand_str MIGHT produce a current key in use\n            char key[10];\n            rand_str(key, 9);\n            INSERT_SYM(func->locals, key, sym);\n            INSERT_SYM(GET_SCP(scps), sym->name, sym);\n        }\n\n        return;\n    }\n    case IDENTIFIER_DATA:\n    {\n        pSymbol sym;\n        char *name = node->data;\n\n        // Lookup name in locale\n        size_t i = scps->lvl;\n        do {\n            LOOKUP_SYM(scps->scp[i], name, &sym);\n            if (sym) goto found;\n        } while (i-- != 0);\n        LOOKUP_SYM(func->locals, name, &sym);\n        if (sym) goto found;\n        LOOKUP_SYM(global_names, name, &sym);\n        if (sym) goto found;\n        fprintf(stderr, \"Error: Symbol `%s` doesn't exist\\n\", name);\n        return;\n        //exit(1);\n\n    found:\n        node->entry = sym;\n        return;\n    }\n    case STRING_DATA:\n        move_string_list(node);\n        return;\n\n    case BLOCK:\n    {\n        // Setup next scope\n        size_t lvl = ++scps->lvl;\n        scps->scp = realloc(scps->scp, sizeof(pTlhash) * (lvl + 1));\n        GET_SCP(scps) = malloc(sizeof(Tlhash));\n        tlhash_init(GET_SCP(scps), 16);\n\n        // Traverse tree pre-order\n        for (size_t i = 0; i < GET_SIZE(node); i++)\n            traverse_node(func, GET_CHILD(node, i), scps);\n\n        // Cleanup\n        tlhash_finalize(GET_SCP(scps));\n        free(GET_SCP(scps));\n        scps->lvl--;\n\n        return;\n    }\n    default:\n        // Traverse tree pre-order\n        for (size_t i = 0; i < GET_SIZE(node); i++)\n            traverse_node(func, GET_CHILD(node, i), scps);\n    }\n\n}\n\n/*******************************************************************************\n*       Functions\n*******************************************************************************/\n\nvoid ir_init(void)\n{\n    string_list = malloc(sizeof(char *));\n    global_names = malloc(sizeof(Tlhash));\n    tlhash_init(global_names, 16);\n}\n\n\nvoid ir_destroy(void)\n{\n    size_t n_globals = tlhash_size(global_names);\n    pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);\n    tlhash_values(global_names, (void **)global_list);\n\n    // For all global symbols\n    for (size_t n = 0; n < n_globals; n++)\n    {\n        // If function\n        if (global_list[n]->type == SYM_FUNCTION)\n        {\n            pTlhash local_names = global_list[n]->locals;\n            tlhash_finalize(local_names);\n            free(local_names);\n        }\n        global_list[n]->node->entry = NULL;\n        free(global_list[n]);\n    }\n\n    // Release global symbol table and hash\n    tlhash_finalize(global_names);\n    free(global_names);\n    free(global_list);\n}\n\n\nvoid ir_find_globals(pNode root)\n{\n    assert(root != NULL);\n\n    // For all in global list\n    size_t n_func = 0;\n    pNode global_list = root->children[0];\n    for (size_t i = 0; i < global_list->n_children; i++)\n    {\n        pNode entry = GET_CHILD(global_list, i);\n\n        // If decleration\n        if (GET_TYPE(entry) == DECLARATION)\n        {\n            // For all in declaration list\n            pNode list = GET_CHILD(entry, 0);\n            for (size_t j = 0; j < GET_SIZE(list); j++)\n            {\n                // Add to symbol table\n                pNode decl = GET_CHILD(list, j);\n                pSymbol sym = malloc(sizeof(Symbol));\n\n                *sym = (Symbol){\n                    .name = GET_DATA(decl),\n                    .type = SYM_GLOBAL_VAR,\n                    .node = entry,\n                    .seq = j,\n                    .nparms = 0,\n                    .locals = NULL\n                };\n\n                INSERT_SYM(global_names, sym->name, sym);\n            }\n        }\n        // If function\n        else if (GET_TYPE(entry) == FUNCTION)\n        {\n            // Init symbol struct\n            pNode ident = GET_CHILD(entry, 0);\n            size_t nparms = GET_CHILD(entry, 1)\n                          ? GET_SIZE(GET_CHILD(entry, 1))\n                          : 0;\n            pSymbol sym = malloc(sizeof(Symbol));\n            pTlhash locals = malloc(sizeof(Tlhash));\n            tlhash_init(locals, 16);\n\n            *sym = (Symbol){\n                .name = GET_DATA(ident),\n                .type = SYM_FUNCTION,\n                .node = entry,\n                .seq = n_func++,\n                .nparms = nparms,\n                .locals = locals\n            };\n\n            // For all params\n            for (size_t k = 0; k < nparms; k++)\n            {\n                // Add to locals, and sequence\n                pNode param = GET_CHILD(GET_CHILD(entry, 1), k);\n                pSymbol psym = malloc(sizeof(Symbol));\n\n                *psym = (Symbol) {\n                    .name = GET_DATA(param),\n                    .type = SYM_PARAMETER,\n                    .node = entry,\n                    .seq = k,\n                    .nparms = 0,\n                    .locals = NULL\n                };\n\n                INSERT_SYM(locals, psym->name, psym);\n            }\n\n            INSERT_SYM(global_names, sym->name, sym);\n        }\n    }\n}\n\n\nvoid ir_bind_names(pSymbol func, pNode root)\n{\n    assert(func != NULL);\n    assert(root != NULL);\n\n    // Setup scoping\n    Scopes scopes = {\n        .lvl = 0,\n        .curr_seq = 0,\n        .scp = malloc(sizeof(pTlhash))\n    };\n    *scopes.scp = malloc(sizeof(Tlhash));\n    tlhash_init(*scopes.scp, 16);\n\n    // Skip identifier and parameters\n    pNode block = GET_CHILD(root, 2);\n    for (size_t i = 0; i < GET_SIZE(block); i++)\n        traverse_node(func, GET_CHILD(block, i), &scopes);\n\n    // Free scoping\n    tlhash_finalize(*scopes.scp);\n    free(*scopes.scp);\n    free(scopes.scp);\n}\n\n\nvoid ir_print_symbols(void)\n{\n    printf(\"String table:\\n\");\n    for (size_t s = 0; s < stringc; s++)\n        printf(\"%zu: %s\\n\", s, string_list[s]);\n    printf(\"-- \\n\");\n\n    printf(\"Globals:\\n\");\n    size_t n_globals = tlhash_size(global_names);\n    pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);\n    tlhash_values(global_names, (void **)global_list);\n\n    for (size_t g = 0; g < n_globals; g++)\n    {\n        if (global_list[g]->type == SYM_FUNCTION)\n        {\n            printf(\n                \"%s: function %zu:\\n\",\n                global_list[g]->name,\n                global_list[g]->seq\n            );\n            if (global_list[g]->locals != NULL)\n            {\n                size_t localsize = tlhash_size(global_list[g]->locals);\n                printf(\n                    \"\\t%zu local variables, %zu are parameters:\\n\",\n                    localsize,\n                    global_list[g]->nparms\n                );\n                pSymbol *locals = malloc(sizeof(pSymbol) * localsize);\n                tlhash_values(global_list[g]->locals, (void **)locals);\n                for (size_t i = 0; i < localsize; i++)\n                {\n                    printf(\"\\t%s: \", locals[i]->name);\n\n                    if (locals[i]->type == SYM_PARAMETER)\n                        printf(\"parameter %zu\\n\", locals[i]->seq);\n                    else if (locals[i]->type == SYM_LOCAL_VAR)\n                        printf(\"local var %zu\\n\", locals[i]->seq);\n                }\n                free(locals);\n            }\n        }\n        else if (global_list[g]->type == SYM_GLOBAL_VAR)\n        {\n            printf(\"%s: global variable\\n\", global_list[g]->name);\n        }\n    }\n    free(global_list);\n    printf(\"-- \\n\");\n}\n\n\nvoid ir_print_bindings(pNode root)\n{\n    if (root == NULL)\n        return;\n\n    pSymbol entry = root->entry;\n    if (entry != NULL)\n    {\n        switch (entry->type)\n        {\n        case SYM_GLOBAL_VAR:\n            printf(\"Linked global var '%s'\\n\", entry->name);\n            break;\n        case SYM_FUNCTION:\n            printf(\"Linked function %zu ('%s')\\n\", entry->seq, entry->name);\n            break;\n        case SYM_PARAMETER:\n            printf(\"Linked parameter %zu ('%s')\\n\", entry->seq, entry->name);\n            break;\n        case SYM_LOCAL_VAR:\n            printf(\"Linked local var %zu ('%s')\\n\", entry->seq, entry->name);\n            break;\n        }\n    } else if (root->type == STRING_DATA) {\n        size_t string_index = GET_IND(root);\n        if (string_index < stringc)\n            printf(\"Linked string %zu\\n\", GET_IND(root));\n        else\n            printf(\"(Not an indexed string)\\n\");\n    }\n    for (size_t c = 0; c < root->n_children; c++)\n        ir_print_bindings(root->children[c]);\n}\n\n\nvoid ir_obtain_all(pNode root)\n{\n    assert(root != NULL);\n\n    // Iterate over all global symbols, resolve uses of variables:\n    // Obtain all global names\n    size_t n_globals = tlhash_size(global_names);\n    pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);\n    tlhash_values(global_names, (void **)global_list);\n\n    // Call bind_names on all those which are functions\n    for (size_t i = 0; i < n_globals; i++)\n    {\n        pSymbol sym = global_list[i];\n        if (sym->type == SYM_FUNCTION)\n            ir_bind_names(sym, sym->node);\n    }\n    free(global_list);\n}\n\n\nvoid ir_print_final(pNode root)\n{\n    assert(root != NULL);\n\n    // Print the final state of the symbol table(s)\n    ir_print_symbols();\n    printf(\"Bindings:\\n\");\n    ir_print_bindings(root);\n}\n",
 			"settings":
 			{
-				"buffer_size": 4670,
+				"buffer_size": 11816,
 				"line_ending": "Unix"
 			}
 		},
@@ -71,7 +107,7 @@
 			"file": "inc/ir.h",
 			"settings":
 			{
-				"buffer_size": 728,
+				"buffer_size": 1191,
 				"line_ending": "Unix"
 			}
 		}
@@ -117,6 +153,50 @@
 			[
 				"Packages/Makefile/Make.sublime-build",
 				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Test"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Bench"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/Rust/Rust.sublime-build",
+				"Run"
 			]
 		]
 	],
@@ -171,43 +251,68 @@
 	[
 		"/home/edvardsp/Downloads/kompilates/ps4",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc",
-		"/home/edvardsp/Downloads/kompilates/ps4/src"
+		"/home/edvardsp/Downloads/kompilates/ps4/src",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs"
 	],
 	"file_history":
 	[
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.vsl",
+		"/build/glibc-ryFjv0/glibc-2.21/sysdeps/unix/sysv/linux/raise.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/simplify.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/simplify.table",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/node.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/ps4.sublime-project",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/lexical.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/nested_scopes.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.tree",
+		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/nodetypes.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/vslc.c",
+		"/home/edvardsp/Documents/Script/Rust/test.rs",
 		"/home/edvardsp/Documents/Script/C/kr.c",
 		"/home/edvardsp/Documents/Script/C/alias.c",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/nodetypes.h",
-		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
 		"/home/edvardsp/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/edvardsp/.config/sublime-text-3/Packages/User/Makefile.sublime-settings",
 		"/home/edvardsp/Downloads/kompilates/.gitignore",
 		"/home/edvardsp/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/stack.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
-		"/home/edvardsp/Downloads/kompilates/ps4/inc/ir.h",
 		"/home/edvardsp/.config/sublime-text-3/Packages/Alignment/Base File.sublime-settings",
 		"/home/edvardsp/Documents/Kyb/rtkos/Oving5/Makefile",
-		"/home/edvardsp/Downloads/kompilates/ps4/inc/node.h",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/vslc.c",
-		"/home/edvardsp/Downloads/kompilates/ps4/src/ir.c",
 		"/home/edvardsp/Downloads/kompilates/ps4/inc/stack.h",
-		"/home/edvardsp/Downloads/kompilates/ps4/inc/tlhash.h",
-		"/home/edvardsp/Downloads/kompilates/ps3/Makefile",
 		"/home/edvardsp/.config/sublime-text-3/Packages/User/make.sublime-build",
-		"/home/edvardsp/Downloads/kompilates/ps4/ps4.sublime-project",
 		"/build/glibc-ryFjv0/glibc-2.21/csu/libc-start.c",
 		"/home/edvardsp/.config/sublime-text-3/Packages/SublimeGDB/sublimegdb.py",
-		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ir.c",
-		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/ir.h",
-		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/vslc.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/stack.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/vslc.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/include/ir.h",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/tree.c",
-		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/vslc.c",
 		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tree.c",
 		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tlhash.c",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/nodetypes.c",
@@ -221,7 +326,6 @@
 		"/home/edvardsp/Downloads/kompilates/ps3/src/stack.c",
 		"/home/edvardsp/Downloads/kompilates/ps3/src/nodetypes.c",
 		"/home/edvardsp/Downloads/kompilates/ps3/src/scanner.l",
-		"/home/edvardsp/Downloads/kompilates/ps3/src/parser.y",
 		"/home/edvardsp/Downloads/kompilates/ps4/src/ps4.sublime-workspace",
 		"/home/edvardsp/Documents/Script/C/pairs.c",
 		"/etc/apt/sources.list.d/google-chrome.list",
@@ -235,14 +339,9 @@
 		"/home/edvardsp/Downloads/kompilates/ps3/include/nodetypes.h",
 		"/home/edvardsp/Downloads/kompilates/ps3/include/stack.h",
 		"/home/edvardsp/Downloads/kompilates/ps3/include/vslc.h",
-		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree",
 		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree.correct",
-		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/Makefile",
-		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree.correct",
-		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree",
 		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/prec.tree.correct",
 		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/prec.tree",
-		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.vsl",
 		"/etc/apt/apt.conf.d/99progressbar",
 		"/home/edvardsp/backup/Downloads/kompilates/ps3/Makefile",
 		"/home/edvardsp/backup/Downloads/kompilates/ps3/src/tree.c",
@@ -265,6 +364,25 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"break;",
+			"free(",
+			"global_names",
+			"malloc",
+			"scope",
+			"declaration",
+			"declara",
+			"func",
+			"ir_print_bindings",
+			"DECLARATION",
+			"VARIABLE_LIST",
+			"(void **)",
+			"move_string_list",
+			"add_string_list",
+			"decl",
+			"n_string_list",
+			"FUNCTION",
+			"sublimegdb",
+			"sym",
 			":",
 			"int[0-9][0-9]?_t",
 			"int[0-9][0-9]_t",
@@ -360,19 +478,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "src/vslc.c",
+					"file": "src/ir.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1270,
+						"buffer_size": 11816,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								886,
-								886
+								4813,
+								4813
 							]
 						],
 						"settings":
@@ -380,71 +498,159 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
 							],
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 284.0,
+						"translation.y": 2367.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11816,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11816,
+								11816
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"syntax": "Packages/C Improved/C Improved.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5784.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -454,20 +660,20 @@
 			"sheets":
 			[
 				{
-					"buffer": 1,
-					"file": "src/ir.c",
+					"buffer": 2,
+					"file": "inc/ir.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4670,
+						"buffer_size": 1191,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								824,
-								824
+								603,
+								603
 							]
 						],
 						"settings":
@@ -475,61 +681,61 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
 							],
 							"syntax": "Packages/C Improved/C Improved.tmLanguage",
 							"tab_size": 4,
@@ -541,100 +747,13 @@
 					},
 					"stack_index": 1,
 					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "inc/ir.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 728,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								706,
-								706
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content"
-							],
-							"syntax": "Packages/C Improved/C Improved.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
 				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 25.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -720,7 +839,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 127.0,
+	"side_bar_width": 154.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
