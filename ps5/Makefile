@@ -22,7 +22,7 @@ OPT := -O0
 ifeq (${CC}, clang)
 WARN := -Wall -Wextra -Werror -Weverything \
 	-Wno-padded -Wno-switch-enum -Wno-unused-macros \
-	-Wno-unused-function
+	-Wno-unused-function -Wno-dollar-in-identifier-extension
 else
 WARN := -Wall -Wextra -Werror \
 	-Wno-unused-but-set-parameter

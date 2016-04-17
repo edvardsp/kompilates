@@ -34,10 +34,7 @@ typedef struct {
 *       Globals
 *******************************************************************************/
 
-static pTlhash global_names;
-static char **string_list;
-static size_t stringc = 0;
-//static size_t n_string_list = 8;
+Ir ir;
 
 /*******************************************************************************
 *       Static Functions
@@ -102,7 +99,7 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
             if (sym) goto sym_found;
         }
         LOOKUP_SYM(func->locals, name, &sym); if (sym) goto sym_found;
-        LOOKUP_SYM(global_names, name, &sym); if (sym) goto sym_found;
+        LOOKUP_SYM(ir.global_names, name, &sym); if (sym) goto sym_found;
         fprintf(stderr, "Error: Symbol `%s` doesn't exist\n", name);
         exit(1);
 
@@ -112,10 +109,10 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
     }
     case STRING_DATA:
         // Move string from node to string_list, and assign index to node
-        string_list[stringc] = GET_DATA(node);
+        ir.string_list[ir.stringc] = GET_DATA(node);
         GET_DATA(node) = NULL;
-        GET_IND(node) = stringc++;
-        string_list = realloc(string_list, sizeof(char *) * (stringc + 1));
+        GET_IND(node) = ir.stringc++;
+        ir.string_list = realloc(ir.string_list, sizeof(char *) * (ir.stringc + 1));
         return;
 
     default: {}
@@ -151,17 +148,17 @@ static void traverse_node(pSymbol func, pNode node, pScopes scps)
 
 void ir_init(void)
 {
-    string_list = malloc(sizeof(char *));
-    global_names = malloc(sizeof(Tlhash));
-    tlhash_init(global_names, 16);
+    ir.string_list = malloc(sizeof(char *));
+    ir.global_names = malloc(sizeof(Tlhash));
+    tlhash_init(ir.global_names, 16);
 }
 
 
 void ir_destroy(void)
 {
-    size_t n_globals = tlhash_size(global_names);
+    size_t n_globals = tlhash_size(ir.global_names);
     pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);
-    tlhash_values(global_names, (void **)global_list);
+    tlhash_values(ir.global_names, (void **)global_list);
 
     // For all global symbols
     for (size_t n = 0; n < n_globals; n++)
@@ -188,13 +185,13 @@ void ir_destroy(void)
     }
 
     // Release global symbol table and hash
-    tlhash_finalize(global_names);
-    free(global_names);
+    tlhash_finalize(ir.global_names);
+    free(ir.global_names);
     free(global_list);
 
-    for (size_t i = 0; i < stringc; i++)
-        free(string_list[i]);
-    free(string_list);
+    for (size_t i = 0; i < ir.stringc; i++)
+        free(ir.string_list[i]);
+    free(ir.string_list);
 }
 
 
@@ -227,7 +224,7 @@ void ir_find_globals(pNode root)
                     .locals = NULL
                 };
 
-                INSERT_SYM(global_names, sym->name, sym);
+                INSERT_SYM(ir.global_names, sym->name, sym);
             }
         }
         // If function
@@ -270,7 +267,7 @@ void ir_find_globals(pNode root)
                 INSERT_SYM(locals, psym->name, psym);
             }
 
-            INSERT_SYM(global_names, sym->name, sym);
+            INSERT_SYM(ir.global_names, sym->name, sym);
         }
     }
 }
@@ -305,14 +302,14 @@ void ir_bind_names(pSymbol func, pNode root)
 void ir_print_symbols(void)
 {
     printf("String table:\n");
-    for (size_t s = 0; s < stringc; s++)
-        printf("%zu: %s\n", s, string_list[s]);
+    for (size_t s = 0; s < ir.stringc; s++)
+        printf("%zu: %s\n", s, ir.string_list[s]);
     printf("--\n");
 
     printf("Globals:\n");
-    size_t n_globals = tlhash_size(global_names);
+    size_t n_globals = tlhash_size(ir.global_names);
     pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);
-    tlhash_values(global_names, (void **)global_list);
+    tlhash_values(ir.global_names, (void **)global_list);
 
     for (size_t g = 0; g < n_globals; g++)
     {
@@ -379,7 +376,7 @@ void ir_print_bindings(pNode root)
             break;
         }
     } else if (root->type == STRING_DATA) {
-        if (GET_IND(root) < stringc)
+        if (GET_IND(root) < ir.stringc)
             printf("Linked string %zu\n", GET_IND(root));
         else
             printf("(Not an indexed string)\n");
@@ -395,9 +392,9 @@ void ir_obtain_all(pNode root)
 
     // Iterate over all global symbols, resolve uses of variables:
     // Obtain all global names
-    size_t n_globals = tlhash_size(global_names);
+    size_t n_globals = tlhash_size(ir.global_names);
     pSymbol *global_list = malloc(sizeof(pSymbol) * n_globals);
-    tlhash_values(global_names, (void **)global_list);
+    tlhash_values(ir.global_names, (void **)global_list);
 
     // Call bind_names on all those which are functions
     for (size_t i = 0; i < n_globals; i++)

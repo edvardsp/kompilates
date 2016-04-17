@@ -28,7 +28,7 @@ typedef struct _node {
 
 #define GET_CHILD(node, i) ((node)->children[(i)])
 #define GET_CHILDS(node)   ((node)->children)
-#define GET_ENTRY(node)    ((node)->entry)
+#define GET_ENTRY(node)    ((pSymbol)(node)->entry)
 #define GET_TYPE(node)     ((node)->type)
 #define GET_SIZE(node)     ((node)->n_children)
 #define GET_DATA(node)     ((node)->data)

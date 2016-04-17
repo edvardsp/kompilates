@@ -112,7 +112,7 @@ void node_init(pNode nd, node_index_t type, void *data, size_t n_children, ...)
     GET_TYPE(nd)  = type;
     GET_DATA(nd)  = data;
     GET_IND(nd)   = 0;
-    GET_ENTRY(nd) = NULL;
+    nd->entry = NULL;
     GET_SIZE(nd)  = n_children;
     if (n_children > 0)
         GET_CHILDS(nd) = calloc(n_children, sizeof(pNode));

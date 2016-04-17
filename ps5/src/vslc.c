@@ -51,7 +51,7 @@ int main(void)
 
     // Simplify the node tree
     node_simplify(root);
-    //node_print(root);
+    //node_print(root, 0);
 
     // 1. put the global names in the global sym table
     // 2. Go through global sym table and resolve all bindings

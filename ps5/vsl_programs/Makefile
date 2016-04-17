@@ -8,8 +8,7 @@ endif
 
 TARGETS := $(shell ls *.vsl | sed s/\.vsl/\.out/g)
 
-CC  := cc
-ASM := as
+CC  := gcc
 IR  := ../bin/vslc.out
 
 all: ${TARGETS}
@@ -17,9 +16,7 @@ all: ${TARGETS}
 %.out: %.vsl
 	${E} 'Compiling target $@'
 	${Q} ${IR} < $< > $(patsubst %.vsl, %.s, $<)
-	${Q} ${ASM} -o $(patsubst %.vsl, %.o, $<) $(patsubst %.vsl, %.s, $<)
-	${Q} ${CC} -o $@ $(patsubst %.vsl, %.o, $<)
-	${Q} -rm -f $(patsubst %.vsl, %.s, $<) $(patsubst %.vsl, %.o, $<)
+	${Q} ${CC} -o $@ $(patsubst %.vsl, %.s, $<)
 
 clean:
 	${E} 'Removing compiled targets'
