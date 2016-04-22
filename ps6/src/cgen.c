@@ -20,9 +20,14 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ALIGN16(x) (((x)&1) ? 8*(x+1) : 8*(x))
 
+
 #define ASM0(op)       puts("\t" #op)
-#define ASM1(op, a)    puts("\t" #op "\t" #a)
-#define ASM2(op, a, b) puts("\t" #op "\t" #a ", " #b)
+#define ASM1(op, a)    puts("\t" #op "  \t" #a)
+#define ASM2(op, a, b) puts("\t" #op "  \t" #a ", " #b)
+
+#define FASM1(op, a, ...)    printf("\t" #op "  \t" #a "\n", __VA_ARGS__)
+#define FASM2(op, a, b, ...) printf("\t" #op "  \t" #a ", " #b "\n", __VA_ARGS__)
+
 #define ADDR(f1, addr, f2) \
     do { \
         printf("\t%s\t", #f1); \
@@ -97,7 +102,7 @@ static void cgen_main(pSymbol first)
 
     puts("\t# Sanity check on arguments");
     ASM2(subq, $1, %rdi);
-    printf("\tcmpq\t$%zu,%%rdi\n", first->nparms);
+    FASM2(cmpq, $%zu, %%rdi, first->nparms);
     ASM1(jne, ABORT);
     ASM2(cmpq, $0, %rdi);
     ASM1(jz, SKIP_ARGS);
@@ -105,8 +110,8 @@ static void cgen_main(pSymbol first)
 
     puts("\t# Parse args");
     ASM2(movq, %rdi, %rcx);
-    printf("\taddq $%zu, %%rsi\n", 8*first->nparms);
-    ASM0(PARSE_ARGV:);
+    FASM2(addq, $%zu, %%rsi, 8*first->nparms);
+    puts("PARSE_ARGV:");
     ASM1(pushq, %rcx);
     ASM1(pushq, %rsi);
     puts("");
@@ -127,16 +132,16 @@ static void cgen_main(pSymbol first)
 
     puts("\t# Now the arguments are in order on stack");
     for (size_t arg = 0; arg < MIN(6, first->nparms); arg++)
-        printf("\tpopq\t%s\n", record[arg]);
+        FASM1(popq, %s, record[arg]);
 
-    ASM0(SKIP_ARGS:);
-    printf("\tcall\t_%s\n", first->name);
+    puts("SKIP_ARGS:");
+    FASM1(call, _%s, first->name);
     ASM1(jmp, END);
-    ASM0(ABORT:);
+    puts("ABORT:");
     ASM2(movq, $errout, %rdi);
     ASM1(call, puts);
 
-    ASM0(END:);
+    puts("END:");
     ASM2(movq, %rax, %rdi);
     ASM1(call, exit);
     puts("");
@@ -163,8 +168,8 @@ static void cgen_expression(pSymbol func, pNode expr)
             }
 
             for (size_t i = 1; i <= GET_SIZE(args); i++)
-                printf("\tpopq\t%s\n", record[GET_SIZE(args) - i]);
-            printf("\tcall\t_%s\n", GET_ENTRY(iden)->name);
+                FASM1(popq, %s, record[GET_SIZE(args) - i]);
+            FASM1(call, _%s, GET_ENTRY(iden)->name);
             puts("");
             return;
         }
@@ -223,10 +228,10 @@ static void cgen_expression(pSymbol func, pNode expr)
         ADDR(movq, cgen_resaddr(func, GET_ENTRY(expr)), %rax);
         break;
     case NUMBER_DATA:
-        printf("\tmovq\t$%i, %%rax\n", *(int *)GET_DATA(expr));
+        FASM2(movq, $%i, %%rax, *(int *)GET_DATA(expr));
         break;
     case STRING_DATA:
-        printf("\tmovq\t$STR%zu, %%rax\n", expr->index);
+        FASM2(movq, $STR%zu, %%rax, expr->index);
         break;
     default: assert(0);
     }
@@ -301,7 +306,6 @@ static void cgen_if(pSymbol func, pNode if_stmnt)
     puts("\t# If relation");
     // Normal operator epxression
     pNode relation = GET_CHILD(if_stmnt, 0);
-    pNode if_block = GET_CHILD(if_stmnt, 1), else_block = GET_CHILD(if_stmnt, 2);
     pNode lhs = GET_CHILD(relation, 0), rhs = GET_CHILD(relation, 1);
 
     // Left hand side
@@ -315,24 +319,24 @@ static void cgen_if(pSymbol func, pNode if_stmnt)
     ASM2(cmpq, %r10, %rax);
     switch (*(char *)GET_DATA(relation))
     {
-    case '=': printf("\tjne \telse_%zu\n", if_count); break;
-    case '<': printf("\tjle \telse_%zu\n", if_count); break;
-    case '>': printf("\tjge \telse_%zu\n", if_count); break;
+    case '=': printf("\tjne \tELSE_%zu\n", if_count); break;
+    case '<': printf("\tjle \tELSE_%zu\n", if_count); break;
+    case '>': printf("\tjge \tELSE_%zu\n", if_count); break;
     default: assert(0);
     }
     puts("");
 
     puts("\t# Actual if block");
-    cgen_subtree(func, if_block);
-    printf("\tjmp\tfi_%zu\n", if_count);
+    cgen_subtree(func, GET_CHILD(if_stmnt, 1));
+    FASM1(jmp, FI_%zu, if_count);
     puts("");
 
     puts("\t# Actual else block");
-    printf("else_%zu:\n", if_count);
-    if (else_block)
-        cgen_subtree(func, else_block);
+    printf("ELSE_%zu:\n", if_count);
+    if (GET_SIZE(if_stmnt) == 3)
+        cgen_subtree(func, GET_CHILD(if_stmnt, 2));
 
-    printf("fi_%zu:\n", if_count++);
+    printf("FI_%zu:\n", if_count++);
     puts("");
 }
 
@@ -342,7 +346,7 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
 {
 
     puts("\t# While loop");
-    printf("while_%zu:\n", ++while_count);
+    printf("WHILE_%zu:\n", ++while_count);
     pNode relation = GET_CHILD(while_stmnt, 0);
     pNode block = GET_CHILD(while_stmnt, 1);
     pNode lhs = GET_CHILD(relation, 0), rhs = GET_CHILD(relation, 1);
@@ -361,9 +365,9 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
     ASM2(cmpq, %r10, %rax);
     switch (*(char *)GET_DATA(relation))
     {
-    case '=': printf("\tjne \tendwhile_%zu\n", while_count); break;
-    case '<': printf("\tjle \tendwhile_%zu\n", while_count); break;
-    case '>': printf("\tjge \tendwhile_%zu\n", while_count); break;
+    case '=': FASM1(jne, ENDWHILE_%zu, while_count); break;
+    case '<': FASM1(jle, ENDWHILE_%zu, while_count); break;
+    case '>': FASM1(jge, ENDWHILE_%zu, while_count); break;
     default: assert(0);
     }
     puts("");
@@ -371,8 +375,8 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
     cgen_subtree(func, block);
 
     puts("\t# End while block");
-    printf("\tjmp\twhile_%zu\n", while_count);
-    printf("endwhile_%zu:\n", while_count++);
+    FASM1(jmp, WHILE_%zu, while_count);
+    printf("ENDWHILE_%zu:\n", while_count++);
     puts("");
 }
 
@@ -380,7 +384,7 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
 static void cgen_continue(void)
 {
     puts("\t# Continue statement");
-    printf("\tjmp \twhile_%zu\n", while_count);
+    printf("\tjmp \tWHILE_%zu\n", while_count);
     puts("");
 }
 
@@ -418,12 +422,12 @@ static void cgen_functions(pSymbol sym)
     {
         puts("\t# Stack setup of params and local variables");
         printf("\t# Total %zu param(s), %zu var(s)\n", sym->nparms, nlocals-sym->nparms);
-        printf("\tsubq\t$%zu, %%rsp\n", ALIGN16(nlocals));
+        FASM2(subq, $%zu, %%rsp, ALIGN16(nlocals));
         if (sym->nparms > 0)
         {
             puts("\t# Parameters");
             for (size_t j = 0; j < sym->nparms; j++)
-                printf("\tmovq\t%s, -%zu(%%rbp)\n", record[j], 8*(j+1));
+                FASM2(movq, %s, -%zu(%%rbp), record[j], 8*(j+1));
         }
         puts("");
     }

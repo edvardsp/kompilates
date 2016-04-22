@@ -1,0 +1,16 @@
+FUNC fib(n)
+BEGIN
+    VAR i, f1, f2, tmp
+    i := 1
+    f1 := 1
+    f2 := 1
+    WHILE i < n + 1 DO
+    BEGIN
+        PRINT "fib(", i, ") =", f1
+        tmp := f2
+        f2 := f1 + f2
+        f1 := tmp
+        i := i + 1
+    END
+    PRINT "Done!"
+END
