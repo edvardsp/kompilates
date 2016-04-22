@@ -13,4 +13,5 @@ BEGIN
         i := i + 1
     END
     PRINT "Done!"
+    RETURN 0
 END

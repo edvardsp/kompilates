@@ -28,6 +28,9 @@
 #define FASM1(op, a, ...)    printf("\t" #op "  \t" #a "\n", __VA_ARGS__)
 #define FASM2(op, a, b, ...) printf("\t" #op "  \t" #a ", " #b "\n", __VA_ARGS__)
 
+#define LBL(lbl)       puts(#lbl ":")
+#define FLBL(lbl, ...) printf(#lbl ":\n", __VA_ARGS__)
+
 #define ADDR(f1, addr, f2) \
     do { \
         printf("\t%s\t", #f1); \
@@ -94,7 +97,7 @@ static void cgen_globalvars(size_t n_globals, pSymbol *global_list)
 
 static void cgen_main(pSymbol first)
 {
-    puts("main:");
+    LBL(main);
     puts("\t# Stack frame setup");
     ASM1(pushq, %rbp);
     ASM2(movq, %rsp, %rbp);
@@ -111,7 +114,7 @@ static void cgen_main(pSymbol first)
     puts("\t# Parse args");
     ASM2(movq, %rdi, %rcx);
     FASM2(addq, $%zu, %%rsi, 8*first->nparms);
-    puts("PARSE_ARGV:");
+    LBL(PARSE_ARGV);
     ASM1(pushq, %rcx);
     ASM1(pushq, %rsi);
     puts("");
@@ -134,14 +137,14 @@ static void cgen_main(pSymbol first)
     for (size_t arg = 0; arg < MIN(6, first->nparms); arg++)
         FASM1(popq, %s, record[arg]);
 
-    puts("SKIP_ARGS:");
+    LBL(SKIP_ARGS);
     FASM1(call, _%s, first->name);
     ASM1(jmp, END);
-    puts("ABORT:");
+    LBL(ABORT);
     ASM2(movq, $errout, %rdi);
     ASM1(call, puts);
 
-    puts("END:");
+    LBL(END);
     ASM2(movq, %rax, %rdi);
     ASM1(call, exit);
     puts("");
@@ -319,9 +322,9 @@ static void cgen_if(pSymbol func, pNode if_stmnt)
     ASM2(cmpq, %r10, %rax);
     switch (*(char *)GET_DATA(relation))
     {
-    case '=': printf("\tjne \tELSE_%zu\n", if_count); break;
-    case '<': printf("\tjle \tELSE_%zu\n", if_count); break;
-    case '>': printf("\tjge \tELSE_%zu\n", if_count); break;
+    case '=': FASM1(jne, ELSE_%zu, if_count); break;
+    case '<': FASM1(le, ELSE_%zu, if_count); break;
+    case '>': FASM1(ge, ELSE_%zu, if_count); break;
     default: assert(0);
     }
     puts("");
@@ -332,11 +335,11 @@ static void cgen_if(pSymbol func, pNode if_stmnt)
     puts("");
 
     puts("\t# Actual else block");
-    printf("ELSE_%zu:\n", if_count);
+    FLBL(ELSE_%zu, if_count);
     if (GET_SIZE(if_stmnt) == 3)
         cgen_subtree(func, GET_CHILD(if_stmnt, 2));
 
-    printf("FI_%zu:\n", if_count++);
+    FLBL(FI_%zu, if_count++);
     puts("");
 }
 
@@ -346,7 +349,7 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
 {
 
     puts("\t# While loop");
-    printf("WHILE_%zu:\n", ++while_count);
+    FLBL(WHILE_%zu, ++while_count);
     pNode relation = GET_CHILD(while_stmnt, 0);
     pNode block = GET_CHILD(while_stmnt, 1);
     pNode lhs = GET_CHILD(relation, 0), rhs = GET_CHILD(relation, 1);
@@ -376,7 +379,7 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
 
     puts("\t# End while block");
     FASM1(jmp, WHILE_%zu, while_count);
-    printf("ENDWHILE_%zu:\n", while_count++);
+    FLBL(ENDWHILE_%zu, while_count++);
     puts("");
 }
 
@@ -384,7 +387,7 @@ static void cgen_while(pSymbol func, pNode while_stmnt)
 static void cgen_continue(void)
 {
     puts("\t# Continue statement");
-    printf("\tjmp \tWHILE_%zu\n", while_count);
+    FASM1(jmp, WHILE_%zu, while_count);
     puts("");
 }
 
@@ -410,7 +413,7 @@ static void cgen_subtree(pSymbol func, pNode curr)
 
 static void cgen_functions(pSymbol sym)
 {
-    printf("_%s:\n", sym->name);
+    FLBL(_%s, sym->name);
     puts("\t# Stack frame setup");
     ASM1(pushq, %rbp);
     ASM2(movq, %rsp, %rbp);
