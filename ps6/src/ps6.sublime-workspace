@@ -1,0 +1,694 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"n",
+				"nparms"
+			],
+			[
+				"siz",
+				"size_t"
+			],
+			[
+				"SYM_",
+				"SYM_GLOBAL_VAR"
+			],
+			[
+				"cge",
+				"cgen_expression"
+			],
+			[
+				"sym",
+				"sym_main"
+			],
+			[
+				"cgen",
+				"cgen_subtree"
+			],
+			[
+				"tlh",
+				"tlhash_size"
+			],
+			[
+				"glo",
+				"global_list"
+			],
+			[
+				"tlha",
+				"tlhash_finalize"
+			],
+			[
+				"glob",
+				"global_list"
+			],
+			[
+				"gl",
+				"global_list"
+			],
+			[
+				"stri",
+				"string_list"
+			],
+			[
+				"GET",
+				"GET_DATA"
+			],
+			[
+				"subl",
+				"sublimegdb_session_group"
+			],
+			[
+				"sub",
+				"sublimegdb_file_group"
+			],
+			[
+				"n_",
+				"n_children"
+			],
+			[
+				"pri",
+				"println	println!(…)"
+			],
+			[
+				"Sym",
+				"Symtype"
+			],
+			[
+				"C",
+				"CFLAGS"
+			],
+			[
+				"simpl",
+				"simplify"
+			],
+			[
+				"chi",
+				"children"
+			],
+			[
+				"new",
+				"new_data"
+			],
+			[
+				"EXPR",
+				"EXPRDATA_TYPE"
+			],
+			[
+				"NU",
+				"NUMBER_DATA"
+			],
+			[
+				"node",
+				"node_finalize"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Makefile/Make.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/GoSublime/GoSublime.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/GoSublime/GoSublime.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Test"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Bench"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/Rust/Rust.sublime-build",
+				"Run"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 98.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 476.0
+	},
+	"console":
+	{
+		"height": 114.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/edvardsp/Downloads/kompilates/ps6"
+	],
+	"file_history":
+	[
+		"/home/edvardsp/Downloads/kompilates/ps6/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps6/fib.s",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/main.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/japanese/mod.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/japanese/farewells.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/japanese/greetings.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/lib.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/english/mod.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/english/farewells.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/english/greetings.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/japanese/farewell.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/english/farewell.rs",
+		"/home/edvardsp/Documents/Script/Rust/cargo_test/phrases/src/japanese/src.rs",
+		"/home/edvardsp/Documents/Script/Rust/core.rs",
+		"/home/edvardsp/Documents/aim-logikk-dok.txt",
+		"/home/edvardsp/Downloads/kompilates/asd/edvardsp_ps5/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree.correct",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/euclid.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/euclid.s",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/nested_scopes.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/globals_and_args.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/globals_and_args.s",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/lexical.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/lexical.s",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps5/ps5.sublime-project",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/globals_and_args.tree",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/node.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/node.c",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/nodetypes.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/simplify.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/prime.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/prec.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/vsl_programs/newton.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/cgen.c",
+		"/home/edvardsp/.bashrc",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/vslc.c",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/RustAutoComplete.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/vslc.h",
+		"/home/edvardsp/Documents/Script/C++/echo_server.cpp",
+		"/home/edvardsp/Documents/Script/C++/echo_client_sndto.cpp",
+		"/home/edvardsp/Documents/Script/C++/udp_client_conn.cpp",
+		"/build/glibc-ryFjv0/glibc-2.21/csu/libc-start.c",
+		"/home/edvardsp/Downloads/kompilates/ps5/ps5.sublime-workspace",
+		"/home/edvardsp/Downloads/kompilates/ps5/ps4.sublime-project",
+		"/home/edvardsp/Documents/Script/Golang/main.go",
+		"/home/edvardsp/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
+		"/home/edvardsp/.config/sublime-text-3/Packages/GoSublime/USAGE.md",
+		"/home/edvardsp/Documents/Script/C/complex.c",
+		"/usr/include/complex.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/cgen.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/inc/generator.h",
+		"/home/edvardsp/Downloads/kompilates/ps5/src/generator.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/simplify.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/newton.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/newton.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/lexical.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/lexical.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.table.correct",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/node.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/node.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/lexical.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.table",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/nested_scopes.vsl",
+		"/build/glibc-ryFjv0/glibc-2.21/sysdeps/unix/sysv/linux/raise.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/simplify.table",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ir.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/ps4.sublime-project",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.tree",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/nested_scopes.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/lexical.tree",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps3/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/vsl_programs/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4/vsl_programs/euclid.tree",
+		"/home/edvardsp/Downloads/kompilates/ps3/vsl_programs/euclid.vsl",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/nodetypes.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/include/tlhash.h",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/vslc.c",
+		"/home/edvardsp/Documents/Script/Rust/test.rs",
+		"/home/edvardsp/Documents/Script/C/kr.c",
+		"/home/edvardsp/Documents/Script/C/alias.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/nodetypes.h",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/Makefile.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/.gitignore",
+		"/home/edvardsp/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/stack.c",
+		"/home/edvardsp/.config/sublime-text-3/Packages/Alignment/Base File.sublime-settings",
+		"/home/edvardsp/Documents/Kyb/rtkos/Oving5/Makefile",
+		"/home/edvardsp/Downloads/kompilates/ps4/inc/stack.h",
+		"/home/edvardsp/.config/sublime-text-3/Packages/User/make.sublime-build",
+		"/home/edvardsp/.config/sublime-text-3/Packages/SublimeGDB/sublimegdb.py",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/stack.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/vslc.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/include/ir.h",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/tlhash.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps4/src/scanner.l",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/nodetypes.c",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/parser.y",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/ps4.sublime-workspace",
+		"/home/edvardsp/Downloads/kompilates/ps4_copy/src/scanner.l",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/tree.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/vslc.c",
+		"/home/edvardsp/Downloads/kompilates/ps3/src/stack.c"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ansf",
+			"answer",
+			"printf",
+			"ASM0",
+			"puts",
+			"puts\\(\\\"\\\\t(\\S+)\\s(\\S+),\\s(\\S+)\\\"\\)",
+			"puts\\(\\\"\\\\t(\\S+)\\s(\\S+)\\\"\\)",
+			"puts\\(\\\"\\\\t(\\S+)\\s(\\S+)\\)",
+			"PUTS_ADDR",
+			"cgen_variablelist",
+			"ch0",
+			"node",
+			"i",
+			"ALL_DEPS",
+			"ps5",
+			"ps.",
+			"ps4",
+			"f\\s\\(\\s",
+			"s\\s\\(\\s",
+			"\\s\\);",
+			"\\s);",
+			"    ",
+			"decl",
+			"ident",
+			"->",
+			"index",
+			"->",
+			"(\\w+)->index",
+			"(\\w+)->children\\s",
+			"(\\w+)->children",
+			"(\\w+)->data",
+			"(\\w+)->n_children",
+			"(\\w+)->type",
+			"(\\w+)->children\\[(.+)\\]",
+			"(\\w+)->children[.+]",
+			"(\\w+)->data",
+			"(\\w)+->data",
+			"found",
+			"move_string_list",
+			"break;",
+			"free(",
+			"global_names",
+			"malloc",
+			"scope",
+			"declaration",
+			"declara",
+			"func",
+			"ir_print_bindings",
+			"DECLARATION",
+			"VARIABLE_LIST",
+			"(void **)",
+			"move_string_list",
+			"add_string_list",
+			"decl",
+			"n_string_list",
+			"FUNCTION",
+			"sublimegdb",
+			"sym",
+			":",
+			"int[0-9][0-9]?_t",
+			"int[0-9][0-9]_t",
+			"int(32|64)_t",
+			"int32",
+			"int64",
+			"_t",
+			"string_index",
+			"stringc",
+			"(\n",
+			"realloc",
+			"malloc",
+			"calloc",
+			"malloc",
+			"global_list",
+			"locals",
+			"stringc",
+			"n_string_list",
+			"locals",
+			"OFILES",
+			"OGEN",
+			"yy_create_buffer (",
+			"yy_create_buffer",
+			"yyerror(",
+			"WARNINGS",
+			"rm",
+			"Popen",
+			"tlhash_element_t",
+			"tlhash_element_t *",
+			"tlhash_t *",
+			"symtype",
+			"symbol_t *",
+			"node_t *",
+			"node_t",
+			"bin",
+			"src",
+			"result",
+			":",
+			"root",
+			"buf",
+			"int",
+			"Return",
+			"element",
+			"colordiff",
+			"child",
+			"root",
+			"__STACK_H",
+			"x",
+			"expr",
+			"x",
+			"data",
+			"type",
+			"PRINT_LIST",
+			"EXPRESSION_LIS",
+			"print_item",
+			"print_list",
+			"print_state",
+			"expr",
+			"->children)",
+			"num_bytes",
+			"next",
+			"parent"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"ASM2(\\1, \\2, \\3)",
+			"ASM1(\\1, \\2)",
+			"f(",
+			"s(",
+			");",
+			"\\t",
+			"GET_CHILDS(\\1) ",
+			"GET_SIZE(\\1)",
+			"GET_TYPE(\\1)",
+			"GET_CHILD(\\1, \\2)",
+			"GET_CHILD(\\1,)",
+			"GET_CHILD(\\1, \\2)",
+			"GET_DATA(\\1)",
+			"",
+			"Tlhash_elem",
+			"pTlhash_elem ",
+			"pTlhash ",
+			"pTlhash",
+			"pSymbol ",
+			"pNode ",
+			":\\n",
+			"size_t",
+			"",
+			"size_t"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.9o:///home/edvardsp/Documents/Script/Golang":
+	{
+		"height": 100.0
+	},
+	"output.GoSublime-output":
+	{
+		"height": 191.0
+	},
+	"output.MarGo-output":
+	{
+		"height": 100.0
+	},
+	"output.exec":
+	{
+		"height": 172.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "ps6.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 154.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
