@@ -323,8 +323,8 @@ static void cgen_if(pSymbol func, pNode if_stmnt)
     switch (*(char *)GET_DATA(relation))
     {
     case '=': FASM1(jne, ELSE_%zu, if_count); break;
-    case '<': FASM1(le, ELSE_%zu, if_count); break;
-    case '>': FASM1(ge, ELSE_%zu, if_count); break;
+    case '<': FASM1(jle, ELSE_%zu, if_count); break;
+    case '>': FASM1(jge, ELSE_%zu, if_count); break;
     default: assert(0);
     }
     puts("");
